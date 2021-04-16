@@ -6,20 +6,21 @@
 
 namespace modbus {
   
+  
+  class Logic;
+  class Node;
+  class Observer;
+  class Storage;
+  
+  
+  
   using DiscreteInput   = std::uint8_t;     // Single-bit, Read-Only
   using Coil            = std::uint8_t;     // Single-bit, Read-Write
   using InputRegister   = std::uint16_t;    // 16-bit, Read-Only
   using HoldingRegister = std::uint16_t;    // 16-bit, Read-Write
   using DataAddress     = std::uint16_t; 
   using ModbusId        = std::uint8_t;
-
   
-  enum class RegisterType { 
-    Coil,                          ///< RW, 1-bit  size 
-    DiscreteInput,                 ///< RO, 1-bit  size
-    HoldingReg,                    ///< RW, 16-bit size
-    InputReg,                      ///< RO, 16-bit size
-  };
   
   
   
@@ -70,18 +71,41 @@ namespace modbus {
     GatewayTargetDeviceFailedToRespond     = 0x0Bu,
   };
   
-
-  class Logic;
-  class Subscriber;
-  class NodeBase;
-
-  struct Request {
-    NodeBase* context;
-    FunctionCode fc;
-    std::uint8_t* ptr;
-    std::size_t sz;
-    void* user;
-    std::uint8_t status;
+  
+  
+  enum class Access {
+    RO,                          ///< Read access
+    WO,                          ///< Write access
+    RW,                          ///< Read Write access
+    MW                           ///< Modify Write access
   };
   
+  
+  
+  inline std::uint8_t AsciiToDec ( std::uint8_t c )
+  { 
+    if ( ( c > 0x29 ) && ( c < 0x3A )
+    {
+      c = c - 0x30;   // 0-9
+    }
+    else if ( ( c > 0x40 ) && ( c < 0x47 ) )
+    {
+      c = c - 0x37;   // A-F
+    }
+    else if ( ( c > 0x60 )( c < 0x67 )
+    {
+      c = c - 0x57;  // a-f 
+    }
+    
+    return c;  
+  }
+  
+  
+  inline std::uint8_t AsciiToByte( hi, lo ) {
+    return ( AsciiToDec(hi) << 4 ) | AsciiToDec(lo); 
+  }
+  
 } // namespace modbus
+
+
+
