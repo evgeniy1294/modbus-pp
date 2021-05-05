@@ -1,6 +1,5 @@
 #pragma once
 #include <functional>
-#include <utility>
 #include "logic.hpp"
 
 // Temporary include
@@ -10,9 +9,9 @@ namespace modbus {
   
   class Client:: public Logic, public CommunicationInterface {
     public:
-      Client( std::function< std::pair< std::uint8_t*, std::size_t >() > ReadIncomingMessage,
-              std::function< Error ( std::uint8_t* ptr, std::size_t sz ) > StartTransaction,
-              std::function< std::uint8_t*(std::size) > GetTransmitBuffer );
+      Client( std::function< Error ( AduContext& ) > ReadIncomingMessage,
+              std::function< Error ( AduContext& ) > StartTransaction,
+              std::function< Error ( AduContext& ) > GetTransmitBuffer );
      ~Client(); 
       
     public:
@@ -24,13 +23,14 @@ namespace modbus {
       enum class State { Request, Response } _state = State::Request;
       
     private:
-      void ResponseHandler( );
-      bool Check( std::uint8_t* ptr, std::size_t sz );
+      Error SerializeRequest( Buffer& buf, Request req );
+      Error DeserializeResponse( Buffer& buf );
       
     private:
-      std::function< std::pair< std::uint8_t*, std::size_t > > _ReadIncomingMessage;
-      std::function< Error ( std::uint8_t* ptr, std::size_t sz ) > _StartTransaction;
-      std::function< std::uint8_t*(std::size) > _GetTransmitBuffer;
+      std::function< Error ( AduContext& ) > _ReadIncomingMessage;
+      std::function< Error ( AduContext& ) > _StartTransaction;
+      std::function< Error ( AduContext& ) > _GetTransmitBuffer;
+      
       std::queue < Request > _RequestQueue;
       std::vector< Node > _NodeList;
   };

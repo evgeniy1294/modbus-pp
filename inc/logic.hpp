@@ -1,16 +1,13 @@
 #pragma once
 #include "node.hpp"
-
+#include "strategies.hpp"
 
 namespace modbus {
   
   class Logic {
     public:
-      enum class Mode { RTU, TCP, ASCII };
-    
-    public:
-      void SetMode( Mode mode ) {
-        _mode = mode;  
+      void SetStrategy( AduStrategy* strategy ) {
+        _strategy = strategy;   // TODO: сохранять во временную переменную/сбрасывать текущий запрос. Может привести к проблемам в многопоточном приложении.  
       }
       
       virtual Error InitiateRequest( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) = 0;
@@ -27,8 +24,9 @@ namespace modbus {
          std::size_t count;           ///< Data length
       };
     
+      
     private:
-      Mode _mode = Mode::RTU;
+      AduStrategy* _strategy;
   };
   
   

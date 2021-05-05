@@ -82,28 +82,11 @@ namespace modbus {
   
   
   
-  inline std::uint8_t AsciiToDec ( std::uint8_t c )
-  { 
-    if ( ( c > 0x29 ) && ( c < 0x3A )
-    {
-      c = c - 0x30;   // 0-9
-    }
-    else if ( ( c > 0x40 ) && ( c < 0x47 ) )
-    {
-      c = c - 0x37;   // A-F
-    }
-    else if ( ( c > 0x60 )( c < 0x67 )
-    {
-      c = c - 0x57;  // a-f 
-    }
-    
-    return c;  
-  }
-  
-  
-  inline std::uint8_t AsciiToByte( hi, lo ) {
-    return ( AsciiToDec(hi) << 4 ) | AsciiToDec(lo); 
-  }
+  struct AduContext {
+    std::uint8_t begin   = nullptr;
+    std::uint8_t adu_end = nullptr;
+    std::uint8_t end     = nullptr;
+  };
   
 } // namespace modbus
 

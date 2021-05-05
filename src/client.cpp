@@ -5,9 +5,9 @@
 using namespace modbus;
 
 
-Client::Client( std::function< std::pair< std::uint8_t*, std::size_t >() > ReadIncomingMessage,
-                std::function< Error ( std::uint8_t* ptr, std::size_t sz ) > StartTransaction,
-                std::function< std::uint8_t*(std::size) > GetTransmitBuffer )
+Client::Client( std::function< Error ( AduContext& ) > ReadIncomingMessage,
+                std::function< Error ( AduContext& ) > StartTransaction,
+                std::function< Error ( AduContext& ) > GetTransmitBuffer )
 {
   _ReadIncomingMessage = ReadIncomingMessage;
   _StartTransaction    = StartTransaction; 
@@ -49,20 +49,11 @@ void  Client::Process()
       {
         if ( !_RequestQueue.empty() )
         {
-          auto ptr = GetTransmitBuffer( 256 );
-          if ( ptr ! nullptr ) {
-            Request r = _RequestQueue.front();
-            auto   sz = _strategy->Serialize ( ptr, 256, r );
-            Error err = StartTransaction ( ptr, r );
-            
-            if ( err != ERROR_NONE )
-            {
-              std::cout << "Client::Process::Response::Error StartTransaction " << (uint32_t)err << std::endl;
-            }
-            else
-            {
-              _state = State::Response;
-            }
+          Buffer adu;
+          Request r = _RequestQueue.front();
+          if ( SendRequest( r ) == ERROR_NONE )
+          {
+            _state = State::Response;
           }
         }
         
@@ -83,110 +74,169 @@ void  Client::Process()
 
 
 
-void Client::ResponseHandler( )
+
+auto Client::SerializeRequest( Request& r ) -> Error
 {
-  auto [ ptr, sz ] = ReadIncomingMessage();
-  if ( ( ptr != nullptr ) && ( sz != 0 ) )
-  {       
-    auto [ node, fc, ptr, reg, count ] = _RequestQueue.front();
- 
-    // Проверка адреса      
-    if ( IsExpectedAddress( ptr, node->_id ) )    
+  Error err = ERROR_FAILED;
+  
+  auto [node, r_ptr, r_fc, r_addr, r_count] = r; 
+  auto [pdu, maxsz] = _strategy->GetPduSectionRange( RequestAdu );
+  std::uint16_t tid = 0;
+  
+  if ( (pdu != nullptr) && (maxsz != 0) )
+  {
+    switch( fc )
     {
+      case ReadCoils: 
+        [[fallthrough]]
+      case ReadDiscreteInputs:  
+        [[fallthrough]]
+      case ReadHoldingRegisters:
+        [[fallthrough]]
+      case case ReadInputRegister:
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        *pdu++ = (r_addr >> 8) & 0xffu;
+        *pdu++ = r_addr & 0xffu;
+        *pdu++ = (r_count >> 8) & 0xffu;
+        *pdu++ = r_count & 0xffu;
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 5u );
+        
+        break;
       
-      if ( IsValidPacket( ptr, sz ) ) {
-    
-        if ( IsExpectedResponse( ptr, fc, reg, count ) ) {
-    
-          ExceptionId ei = Handling( ptr, sz );
-    
-    
-          // Оповещение наблюдателя
-          Error err = node->Update( fc, ei, reg, count );
-          if ( err != ERROR_NONE )
-          {
-            std::cout << "Client::Process::Response::Error node->Update" << (uint32_t)err << std::endl;
-          }
-        } // IsExpectedResponse?
-      } // IsValidPacket?
-    } // IsExpectedAddress?
-  }
+      
+      
+      case WriteSingleCoil:
+        std::uint8_t coil = ( ( ( byte >> ( addr & 0b111 ) ) & 0b1u ) == 0 ) ? 0x00u : 0xFFu;
+        
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        *pdu++ = (r_addr >> 8) & 0xffu;
+        *pdu++ = r_addr & 0xffu; 
+        *pdu++ = coil;
+        *pdu++ = 0x00;
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 5u );
+        
+        break;
   
-  return;  
-}
-
-
-
-
-
-
-
-bool Client::IsValidPacket( std::uint8_t* ptr, std::size_t sz, Request& r ) {
-  bool ret = false;
-  
-  if ( _mode == Mode::ASCII )
-  {
-    ret = IsValidAsciiPacket( ptr, sz, r ); 
-  }
-  else if ( _mode == Mode::RTU )
-  {
-    ret = IsValidRtuPacket( ptr, sz, r );
-  }
-  else
-  {
-    ret = IsValidTcpPacket( ptr, sz, r );
-  }
-  
-  return ( _mode == Mode::ASCII ) ?  : IsValidModbusPacket( ptr, sz, r ); 
-}
-
-
-
-
-
-bool Client::IsValidModbusAsciiPacket( std::uint8_t* ptr, std::size_t sz, Request& r ) {
-  auto [ node, r_fc, r_ptr, r_reg, r_count ] = r;
-  bool ret = false;
-  
-  if ( sz >= 9u )  // 0x3a + NodeId(2) + ExceptionCode(2) + LCRC8(2) + 0x0D + 0x0A = 9;
-  { 
-    ModbusId id = ((ptr[1] - 0x30) << 4) | (ptr[2] - 0x30);
-    FunctionCode fc = static_cast<FunctionCode>(*(ptr+1) & 0x7f);
-  }
-  
-  return ret;
-}
-
-
-
-
-
-bool Client::IsValidModbusPacket( std::uint8_t* ptr, std::size_t sz, Request& r ) {
-  auto [ node, r_fc, r_ptr, r_reg, r_count ] = r;
-  bool ret = false;
-   
-  if ( sz >= 5u )       // NodeId + FunctionCode + ExceptionCode + CRC16 = 5
-  {
-    ModbusId id     = *ptr;
-    FunctionCode fc = static_cast<FunctionCode>(*(ptr+1) & 0x7f);
-    
-    if ( id == node->_id ) 
-    {
-      if ( fc == r_fc ) {
-        if ( CalculateCrc16( ptr, sz ) == 0)
+        
+        
+      case WriteSingleRegister:
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        *pdu++ = (r_addr >> 8) & 0xffu;
+        *pdu++ = r_addr & 0xffu; 
+        *pdu++ = *(r_ptr+1);
+        *pdu++ = *r_ptr;
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 5u );
+        
+        break;
+      
+        
+      
+      case WriteMultipleCoil:
+      {
+        std::size_t count = r_ptr + ( r_count >> 3 );
+        std::size_t tail  = r_count & 0b111;
+        
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        *pdu++ = (r_addr >> 8) & 0xffu;
+        *pdu++ = r_addr & 0xffu; 
+        *pdu++ = (r_count >> 8) & 0xffu;
+        *pdu++ = r_count & 0xffu;
+        *pdu++ = count + ( ( tail != 0 ) ? 1u : 0u );
+        
+        for ( std::uint8_t* end = pdu+count; pdu < end; pdu++, r_ptr++)
         {
-          ret = true;
+          *pdu = *r_ptr; 
         }
-      } // fc == r_fc ? 
-    } // id == node->_id ?
-  } // sz >= 5u ?
-   
-  return ret;
+          
+        if ( tail != 0 )
+        { 
+          *pdu++ = *r_ptr & (0xFF >> ( 8u - tail ));
+          count++;
+        }
+        
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 5u + count );
+        
+      } break;
+      
+      
+      
+      
+      case WriteMultipleRegisters:
+      {
+        std::uint8_t byte_count = r_count << 1u;
+        std::uint8_t r_ptr_end  = r_ptr + byte_count;
+        
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        *pdu++ = (r_addr >> 8) & 0xffu;
+        *pdu++ = r_addr & 0xffu; 
+        *pdu++ = (r_count >> 8) & 0xffu;
+        *pdu++ = r_count & 0xffu;
+        *pdu++ = byte_count;
+        
+        while( r_ptr < r_ptr_end )
+        {
+          *pdu++ = *(r_ptr + 1);  // TODO: Только Little-Endian! Исправить
+          *pdu++ = *r_ptr;
+           r_ptr = r_ptr + 2;
+        }
+        
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 5u + byte_count );
+        
+      } break;
+      
+      
+      
+      
+      
+      case ReadWriteMultipleRegisters:
+        
+        break;
+      
+      case MaskWriteRegister:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+      
+      case ReadFifoQueue:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+      
+      case ReadFileRecord:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+      
+      case WriteFileRecord:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+      
+      case ReadExceptionStatus:
+      case GetComEventCounter:
+      case GetComEventLog:
+      case ReportServerId:
+        *pdu++ = static_cast< std::uint8_t >(fc);
+        err = _strategy->CreateAdu( RequestAdu, node->id, tid, 0u );
+        break;
+      
+      case Diagnostic:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+            
+      case ReadDeviceIdentification:
+        err = ERROR_NOT_IMPLEMENTED;
+        break;
+      
+      default:
+        err = SerializeUserDefinedRequest( r );
+    }  
+  }
+  
+  
+  return err; 
 }
 
 
-      
-      
+
+
+
       
       
       
