@@ -25,38 +25,6 @@ namespace modbus {
   
   
   
-  enum class FunctionCode: std::uint8_t {
-    // Bit access
-    ReadCoils                       = 0x01u, 
-    ReadDiscreteInputs              = 0x02u,
-    WriteSingleCoil                 = 0x05u,
-    WriteMultipleCoil               = 0x0Fu,
-    
-    // 16-bit access
-    ReadInputRegister               = 0x04u,
-    ReadHoldingRegisters            = 0x03u,
-    WriteSingleRegister             = 0x06u,
-    WriteMultipleRegisters          = 0x10u,
-    ReadWriteMultipleRegisters      = 0x17u,
-    MaskWriteRegister               = 0x16u,
-    ReadFifoQueue                   = 0x18u,
-    
-    // File record access
-    ReadFileRecord                  = 0x14u,
-    WriteFileRecord                 = 0x15u,
-    
-    // Diagnostics
-    ReadExceptionStatus             = 0x07u,
-    Diagnostic                      = 0x08u,
-    GetComEventCounter              = 0x0Bu,
-    GetComEventLog                  = 0x0Cu,
-    ReportServerId                  = 0x11u,
-    ReadDeviceIdentification        = 0x2Bu,
-  };
-  
-  
-  
-  
   
   enum class ExceptionId: std::uint8_t {
     None                                   = 0x00u,
@@ -82,7 +50,7 @@ namespace modbus {
   
   
   
-  struct AduContext {
+  struct Adu {
     std::uint8_t begin   = nullptr;
     std::uint8_t adu_end = nullptr;
     std::uint8_t end     = nullptr;
