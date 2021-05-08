@@ -15,7 +15,7 @@ WriteSingleRegister::WriteSingleRegister(void* context, std::uint8_t value, std:
 
 
 
-std::size_t WriteSingleRegister::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t WriteSingleRegister::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -32,36 +32,3 @@ std::size_t WriteSingleRegister::CreateRequest( std::uint8_t* pdu, std::size_t s
       
   return ret;
 }
-
-
-
-
-
-
-Error WriteSingleRegister::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error WriteSingleRegister::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error WriteSingleRegister::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

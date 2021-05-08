@@ -16,7 +16,7 @@ WriteMultipleRegisters::WriteMultipleRegisters(void* context, std::uint8_t* ptr,
 
 
 
-std::size_t WriteMultipleRegisters::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t WriteMultipleRegisters::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t byte_count = _count * 2 ;
   std::size_t RequestPduSize = 6u + byte_count;
@@ -49,33 +49,3 @@ std::size_t WriteMultipleRegisters::CreateRequest( std::uint8_t* pdu, std::size_
 
 
 
-
-
-
-Error WriteMultipleRegisters::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error WriteMultipleRegisters::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error WriteMultipleRegisters::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

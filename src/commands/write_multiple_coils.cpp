@@ -17,7 +17,7 @@ WriteMultipleCoils::WriteMultipleCoils(void* context, std::uint8_t* ptr, std::si
 
 
 
-std::size_t WriteMultipleCoils::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t WriteMultipleCoils::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t byte_count = _count >> 3 ;
   std::size_t tail_bit   = _count & 0b111;
@@ -55,33 +55,3 @@ std::size_t WriteMultipleCoils::CreateRequest( std::uint8_t* pdu, std::size_t sz
 
 
 
-
-
-
-Error WriteMultipleCoils::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error WriteMultipleCoils::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error WriteMultipleCoils::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

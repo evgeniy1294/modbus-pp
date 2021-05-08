@@ -88,7 +88,7 @@ auto RtuStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
     
     if ( pdu_max_size != 0u )
     {
-      std::size_t pdu_size = cmd->CreateRequest(ptr+kPduStartOffset, pdu_max_size);
+      std::size_t pdu_size = cmd->Serialize(ptr+kPduStartOffset, pdu_max_size);
       
       if ( pdu_size != 0u )
       {

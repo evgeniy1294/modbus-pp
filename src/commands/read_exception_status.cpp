@@ -13,7 +13,7 @@ ReadExceptionStatus::ReadExceptionStatus(void* context)
 
 
 
-std::size_t ReadExceptionStatus::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t ReadExceptionStatus::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -27,33 +27,3 @@ std::size_t ReadExceptionStatus::CreateRequest( std::uint8_t* pdu, std::size_t s
 
 
 
-
-
-
-Error ReadExceptionStatus::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error ReadExceptionStatus::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error ReadExceptionStatus::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

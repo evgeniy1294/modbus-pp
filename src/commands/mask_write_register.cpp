@@ -16,7 +16,7 @@ MaskWriteRegister::MaskWriteRegister( void* context, std::size_t addr, std::uint
 
 
 
-std::size_t MaskWriteRegister::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t MaskWriteRegister::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -39,32 +39,3 @@ std::size_t MaskWriteRegister::CreateRequest( std::uint8_t* pdu, std::size_t sz 
 
 
 
-
-
-Error MaskWriteRegister::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error MaskWriteRegister::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error MaskWriteRegister::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

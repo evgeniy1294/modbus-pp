@@ -14,7 +14,7 @@ ReadInputRegisters::ReadInputRegisters(void* context, std::uint8_t* ptr, std::si
 
 
       
-std::size_t ReadInputRegisters::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t ReadInputRegisters::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -36,31 +36,3 @@ std::size_t ReadInputRegisters::CreateRequest( std::uint8_t* pdu, std::size_t sz
 
 
 
-
-Error ReadInputRegisters::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error ReadInputRegisters::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error ReadInputRegisters::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      

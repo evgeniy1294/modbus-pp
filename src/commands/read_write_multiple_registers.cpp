@@ -21,7 +21,7 @@ ReadWriteMultipleRegisters::ReadWriteMultipleRegisters( void* context,
 
 
 
-std::size_t ReadWriteMultipleRegisters::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t ReadWriteMultipleRegisters::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t byte_count = _write_count * 2 ;
   std::size_t RequestPduSize = 10u + byte_count;
@@ -58,32 +58,3 @@ std::size_t ReadWriteMultipleRegisters::CreateRequest( std::uint8_t* pdu, std::s
 
 
 
-
-
-Error ReadWriteMultipleRegisters::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error ReadWriteMultipleRegisters::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error ReadWriteMultipleRegisters::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

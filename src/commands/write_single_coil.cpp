@@ -15,7 +15,7 @@ WriteSingleCoil::WriteSingleCoil(void* context, std::uint8_t value, std::size_t 
 
 
 
-std::size_t WriteSingleCoil::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t WriteSingleCoil::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -33,35 +33,3 @@ std::size_t WriteSingleCoil::CreateRequest( std::uint8_t* pdu, std::size_t sz )
   return ret;    
 }
 
-
-
-
-
-
-Error WriteSingleCoil::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error WriteSingleCoil::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error WriteSingleCoil::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-     

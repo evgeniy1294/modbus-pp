@@ -17,7 +17,7 @@ ReadCoils::ReadCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::si
 
 
 
-std::size_t ReadCoils::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t ReadCoils::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -32,41 +32,6 @@ std::size_t ReadCoils::CreateRequest( std::uint8_t* pdu, std::size_t sz )
   }
       
   return ret;    
-}
-
-
-
-
-
-
-Error ReadCoils::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-      
-      
-Error ReadCoils::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-      
-
-
-Error ReadCoils::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
 }
 
 

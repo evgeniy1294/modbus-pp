@@ -14,7 +14,7 @@ ReadDiscreteInputs::ReadDiscreteInputs(void* context, std::uint8_t* ptr, std::si
 
 
       
-std::size_t ReadDiscreteInputs::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
+std::size_t ReadDiscreteInputs::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
       
@@ -31,36 +31,3 @@ std::size_t ReadDiscreteInputs::CreateRequest( std::uint8_t* pdu, std::size_t sz
       
   return ret;    
 }
-
-
-
-
-
-
-Error ReadDiscreteInputs::HandleResponce( std::uint8_t* pdu, std::size_t sz ) 
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-      
-
-Error ReadDiscreteInputs::CreateResponce( std::uint8_t* pdu, std::size_t maxsz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
-      
-      
-      
-      
-
-
-Error ReadDiscreteInputs::HandleRequest( std::uint8_t* pdu, std::size_t sz )
-{
-  return ERROR_NOT_IMPLEMENTED;
-}
-      
