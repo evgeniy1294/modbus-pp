@@ -1,4 +1,5 @@
-#include "../inc/modbus.hpp"
+#include "commands.hpp"
+#include "strategies.hpp"
 
 
 int main () {

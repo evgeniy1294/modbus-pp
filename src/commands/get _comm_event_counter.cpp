@@ -15,7 +15,7 @@ GetCommEventCounter::GetCommEventCounter(void* context)
 
 std::size_t GetCommEventCounter::CreateRequest( std::uint8_t* pdu, std::size_t sz ) 
 {
-  std::size_t ret = 0
+  std::size_t ret = 0;
       
   if ( sz >= kRequestPduSize ) {
     *pdu = kCode;      

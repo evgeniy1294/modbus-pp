@@ -4,12 +4,20 @@
 using namespace modbus;
 
 
+// TODO: Fix it after test
+std::uint16_t CalculateCrc16( std::uint8_t* data, std::uint8_t* end )
+{
+  return 0xAABB;
+}
+
+
+
 
 
   
-auto RtuStrategy::CheckAdu( AduContext& context ) -> Error
+auto RtuStrategy::Check( Buffer& buffer ) -> Error
 {
-  return ( CalculateCrc16( context.begin, context.adu_end ) == 0 ? ERROR_NONE : ERROR_FAILED );
+  return ( CalculateCrc16( buffer.begin, buffer.adu_end ) == 0 ? ERROR_NONE : ERROR_FAILED );
 }
 
 
@@ -17,110 +25,83 @@ auto RtuStrategy::CheckAdu( AduContext& context ) -> Error
 
 
 
-
-
-
-
-
-
-auto RtuStrategy::GetPduSectionRange( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t > 
+auto RtuStrategy::ExtractPdu( Buffer& buffer ) -> std::pair< std::uint8_t*, std::size_t >
 {
   std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
-      
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
+  std::size_t   pdu_size = 0;
+  
+  if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
-    if ( (context.end - context.begin ) >= MinAduSize ) 
+    std::size_t adu_size = buffer.adu_end - buffer.begin;
+
+    if ( adu_size > kRtuWrapSize )
     {
-      pdu = context.begin + PduStartPos;
-      sz  = (context.end - ptr) - 2u /*crc16*/;
-      sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
+      pdu = buffer.begin + kPduStartOffset;
+      pdu_size  = adu_size - kRtuWrapSize;
+      pdu_size  = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
+    }
+  }
+  
+  return { pdu, pdu_size };
+}
+
+
+
+
+
+
+
+
+auto RtuStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std::uint16_t >
+{
+  std::uint8_t ret = kDummyUnitId;
+  
+  if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
+  {
+    std::size_t adu_size = buffer.adu_end - buffer.begin;
+
+    if ( adu_size >= kRtuWrapSize )
+    {
+      ret = buffer.begin[kServerAddrPos];
     }
   }
       
-  return { pdu, sz };
+  return { ret, kDummyTransactionId };
 }
-    
- 
 
-    
 
+
+
+
+
+
+
+auto RtuStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
+{
+  Error err = ERROR_FAILED;
+  
+  if ( ( buffer.begin != nullptr ) && ( buffer.end > buffer.begin ) )
+  {
+    std::size_t   adu_max_size = buffer.end - buffer.begin;
+    std::size_t   pdu_max_size = (adu_max_size > kRtuWrapSize) ? adu_max_size - kRtuWrapSize : 0u;
+    std::uint8_t* ptr = buffer.begin;
     
-    
+    if ( pdu_max_size != 0u )
+    {
+      std::size_t pdu_size = cmd->CreateRequest(ptr+kPduStartOffset, pdu_max_size);
+      
+      if ( pdu_size != 0u )
+      {
+        *ptr = cmd->GetUnitId();
+        ptr  = ptr + pdu_size + kPduStartOffset;
+        
+        std::uint16_t crc16 = CalculateCrc16( buffer.begin, ptr );
+       *ptr++ =   crc16 & 0xff;
+       *ptr++ = ( crc16 >> 8 ) & 0xff;
      
-auto RtuStrategy::ExtractPdu( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t >
-{
-  std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
-  
-  if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
-  {
-    if ( (context.adu_end - context.begin) >= MinAduSize )
-    {
-      pdu = context.begin + PduStartPos;  
-      sz  = (context.adu_end - ptr) - 2u /*crc16*/;
-      sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
-    }
-  }
-  
-  
-  return { pdu, sz };
-}
-
-
-
-
-
-
-
-
-auto RtuStrategy::GetAduInfo( AduContext& context ) -> std::pair< std::uint8_t, std::uint16_t > 
-{
-  std::uint8_t ret = DummyServerAddr;
-  
-  if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
-  {
-    if ( (context.adu_end - context.begin) >= MinAduSize )
-    {
-      ret = context.begin[ServerAddrPos];
-    }
-  }
-      
-  return { ret, DummyTransactionId };
-}
-
-
-
-
-
-
-
-
-auto RtuStrategy::CreateAdu( AduContext& context, std::uint8_t id, std::16_t tid, std::size_t pdu_sz ) -> Error
-{
-  Error err = ERROR_FAILED; 
-  pdu_sz = (pdu_sz > MaxPduSize) ? MaxPduSize : pdu_sz;
- 
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
-  {
-    std::size_t adu_sz = pdu_sz + 1u /*id*/ + 2u /*crc16*/;
-    
-    if ( ( context.end - context.begin ) >= adu_sz )
-    {
-      std::uint8_t* adu_ptr = context.begin;
-          
-     *adu_ptr++ = id; 
-          
-      // PDU уже во временном хранилище
-      adu_ptr += pdu_sz;
-          
-      // Расчет сrc;
-      std::uint16_t crc16 = CalculateCrc16( context.begin, adu_ptr );
-     *adu_ptr++ = crc16 & 0xff;
-     *adu_ptr++ = (crc16 >> 8) & 0xff;
-     
-      context.adu_end = adu_ptr;
-      err = ERROR_NONE;
+        buffer.adu_end = ptr;
+        err = ERROR_NONE;
+      }
     }
   }
       
@@ -129,4 +110,13 @@ auto RtuStrategy::CreateAdu( AduContext& context, std::uint8_t id, std::16_t tid
 
 
 
+Error RtuStrategy::CreateAdu( Buffer&, Result* )
+{
+  return ERROR_NOT_IMPLEMENTED;  
+} 
 
+
+
+ 
+      
+      

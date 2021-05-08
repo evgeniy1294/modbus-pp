@@ -7,7 +7,7 @@ using namespace modbus;
 
 
   
-auto TcpStrategy::CheckAdu( AduContext& context ) -> Error
+auto TcpStrategy::Check( Buffer& context ) -> Error
 {
   return ERROR_NONE;
 }
@@ -15,47 +15,28 @@ auto TcpStrategy::CheckAdu( AduContext& context ) -> Error
 
 
 
+  
+  
 
-auto TcpStrategy::GetPduSectionRange( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t > 
+
+auto TcpStrategy::ExtractPdu( Buffer& context ) -> std::pair< std::uint8_t*, std::size_t >
 {
-  std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
-      
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
-  {
-    if ( (context.end - context.begin ) >= MinimalAduSize ) 
-    {
-      pdu = context.begin + PduStartPos;
-      sz  = context.end - ptr;
-      sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
-    }
-  }
-      
-  return { pdu, sz };
-}
-  
-  
-  
-  
-
-
-auto TcpStrategy::ExtractPdu( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t >
-{
-  std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
+  std::uint8_t* pdu      = nullptr;
+  std::size_t   pdu_size = 0;
   
   if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
   {
-    if ( (context.adu_end - context.begin) >= MinimalAduSize )
+    std::size_t adu_size = context.adu_end - context.begin;
+
+    if ( adu_size > kMbapHeaderSize )
     {
-      pdu = context.begin + PduStartPos;  
-      sz  = context.adu_end - ptr;
-      sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
+      pdu      = context.begin + kPduStartOffset;
+      pdu_size = adu_size - kMbapHeaderSize;
+      pdu_size = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
     }
   }
   
-  
-  return { pdu, sz };
+  return { pdu, pdu_size };
 }
 
 
@@ -63,19 +44,21 @@ auto TcpStrategy::ExtractPdu( AduContext& context ) -> std::pair< std::uint8_t*,
 
 
 
-auto TcpStrategy::GetAduInfo( AduContext& context ) -> std::pair< std::uint8_t, std::uint16_t > 
+auto TcpStrategy::GetAduInfo( Buffer& context ) -> std::pair< std::uint8_t, std::uint16_t >
 {
-  std::uint8_t  id  = DummyServerAddr;
-  std::uint16_t tid = DummyTransactionId;
+  std::uint8_t  id  = kDummyUnitId;
+  std::uint16_t tid = kDummyTransactionId;
       
   if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
   {
-    if ( (context.adu_end - context.begin) >= MinAduSize )
+    std::size_t adu_size = context.adu_end - context.begin;
+
+    if ( adu_size > kMbapHeaderSize )
     {
-      tid  = context.begin[TransactionIdHiPos] << 8;
-      tid |= context.begin[TransactionIdLoPos]; 
+      tid  = context.begin[kTransactionIdHiPos] << 8;
+      tid |= context.begin[kTransactionIdLoPos];
     
-      id   = context.begin[ServerAddrPos];
+      id   = context.begin[kServerAddrPos];
     }
   }
       
@@ -88,35 +71,37 @@ auto TcpStrategy::GetAduInfo( AduContext& context ) -> std::pair< std::uint8_t, 
 
     
 
-auto  TcpStrategy::CreateAdu( AduContext& context, std::uint8_t id, std::16_t tid, std::size_t pdu_sz ) -> Error
+auto  TcpStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
 {
   Error err = ERROR_FAILED;
-  pdu_sz = (pdu_sz > MaxPduSize) ? MaxPduSize : pdu_sz;
       
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
+  if ( ( buffer.begin != nullptr ) && ( buffer.end > buffer.begin ) )
   {
-    std::size_t adu_sz = pdu_sz + MbapHeaderSize;
+    std::size_t   adu_max_size = buffer.end - buffer.begin;
+    std::size_t   pdu_max_size = (adu_max_size > kMbapHeaderSize) ? adu_max_size - kMbapHeaderSize : 0u;
+    std::uint8_t* ptr = buffer.begin;
     
-    if ( ( context.end - context.begin ) >= adu_sz )
-    {
-      std::uint8_t* adu_ptr = context.begin;
-          
-      // MBAP
-      std::uint16_t tmp = pdu_sz + 1u /* ID */; 
-         
-      *adu_ptr++ = (tid >> 8) & 0xff;
-      *adu_ptr++ = tid & 0xff;
-      *adu_ptr++ = 0;
-      *adu_ptr++ = 0;
-      *adu_ptr++ = (tmp >> 8) & 0xff;
-      *adu_ptr++ = tmp & 0xff;
-      *adu_ptr++ = id; 
-          
-      // PDU уже во временном хранилище
-      adu_ptr += pdu_sz;
-      context.adu_end = adu_ptr;
+    if ( pdu_max_size != 0u )
+    {          
+      std::size_t pdu_size = cmd->CreateRequest(ptr+kPduStartOffset, pdu_max_size);
       
-      err = ERROR_NONE;
+      if ( pdu_size != 0u )
+      {
+        std::uint16_t length = pdu_size + 1u; 
+        std::uint16_t tid    = 0;    // TODO: сделать рандомным/счетчиком
+        
+        *ptr++ = (tid >> 8) & 0xff;
+        *ptr++ = tid & 0xff;
+        *ptr++ = 0;
+        *ptr++ = 0;
+        *ptr++ = (length >> 8) & 0xff;
+        *ptr++ = length & 0xff;
+        *ptr++ = cmd->GetUnitId();
+          
+        buffer.adu_end = ptr + pdu_size;
+      
+        err = ERROR_NONE;
+      }
     }
   }
       
@@ -125,4 +110,11 @@ auto  TcpStrategy::CreateAdu( AduContext& context, std::uint8_t id, std::16_t ti
 }
     
     
+
     
+    
+Error TcpStrategy::CreateAdu( Buffer& buffer, Result* )
+{
+  return ERROR_NOT_IMPLEMENTED;  
+} 
+

@@ -30,7 +30,7 @@ std::size_t WriteSingleRegister::CreateRequest( std::uint8_t* pdu, std::size_t s
     ret = kRequestPduSize;
   }
       
-  return err;    
+  return ret;
 }
 
 

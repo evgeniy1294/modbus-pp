@@ -95,7 +95,7 @@ static inline std::uint8_t AsciiToByteFast ( std::uint8_t hi, std::uint8_t lo )
 
 
 
-static std::uint8_t ByteArrayToAscii( std::uint8_t* first, std::uint8_t* last, std::uint8_t* end )
+static std::uint8_t* ByteArrayToAscii( std::uint8_t* first, std::uint8_t* last, std::uint8_t* end )
 {
   std::uint8_t* iptr = last - 1;
   std::uint8_t* optr = first + ( ( (last - first) << 1 ) - 1u );
@@ -129,7 +129,7 @@ static Error AsciiToByteArray( std::uint8_t* begin, std::uint8_t* end )
 {
   std::uint8_t* iptr = begin;
   std::uint8_t* optr = begin;
-  Error err = ( ( (end - begin) & 0x1u ) == 0 ) ERROR_NONE ? ERROR_FAILED;
+  Error err = ( ( (end - begin) & 0x1u ) == 0 ) ? ERROR_NONE : ERROR_FAILED;
   
   if ( err == ERROR_NONE )
   {
@@ -171,27 +171,27 @@ static std::uint8_t CalculateLrc8( const std::uint8_t* data, const std::uint8_t*
 
 
 
-auto AsciiStrategy::CheckAdu( AduContext& context ) -> Error
+auto AsciiStrategy::Check( Buffer& buffer ) -> Error
 {
-  bool ret = ERROR_FAILED;
+  Error ret = ERROR_FAILED;
   
-  if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
+  if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
-    std::size_t sz = context.adu_end - context.begin;
+    std::size_t sz = buffer.adu_end - buffer.begin;
       
-    if ( ( sz >= MinAduSize) && ( sz < MaxAduSize )
+    if ( sz >= kAsciiWrapSize )
     {
-      std::uint8_t prefix  = *context.begin;
-      std::uint8_t suffix1 = *( context.adu_end - 2u );
-      std::uint8_t suffix2 = *( context.adu_end - 1u );
+      std::uint8_t prefix  = *buffer.begin;
+      std::uint8_t suffix1 = *( buffer.adu_end - 2u );
+      std::uint8_t suffix2 = *( buffer.adu_end - 1u );
         
       if ( ( prefix == ':' ) && ( suffix1 == 0x0D ) && ( suffix2 == 0x0A ) )
       {
-        std::uint8_t lrc8lo = *( context.adu_end - 4u );
-        std::uint9_t lrc8hi = *( context.adu_end - 3u );
+        std::uint8_t lrc8lo = *( buffer.adu_end - 4u );
+        std::uint8_t lrc8hi = *( buffer.adu_end - 3u );
         std::uint8_t lrc8 = AsciiToByte  ( lrc8hi, lrc8lo );
           
-        ret = (lrc8 == CalculateLrc8( context.begin+1, context.adu_end-4 )) ? ERROR_NONE : ERROR_FAILED;
+        ret = (lrc8 == CalculateLrc8( buffer.begin+1, buffer.adu_end-4 )) ? ERROR_NONE : ERROR_FAILED;
       }
     }
   }
@@ -204,61 +204,37 @@ auto AsciiStrategy::CheckAdu( AduContext& context ) -> Error
                                           
                                           
 
+ 
 
-
-
-auto AsciiStrategy::GetPduSectionRange( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t > 
+ 
+// TODO: Change to "ExtractCommand"
+auto AsciiStrategy::ExtractPdu( Buffer& buffer ) -> std::pair< std::uint8_t*, std::size_t >
 {
   std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
-      
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
-  {
-    if ( ( context.end - context.begin ) >= MinAduSize ) 
-    {
-      pdu = context.begin + PduStartPos;
-      sz  = ( (context.end - ptr) - 2u /*lrc8*/ - 2u /* 0x0D + 0x0A */ ) >> 1;
-      sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
-    }
-  }
-      
-  return { pdu, sz };
-}
-    
- 
-
-
- 
-
- 
- 
-auto AsciiStrategy::ExtractPdu( AduContext& context ) -> std::pair< std::uint8_t*, std::size_t >
-{
-  std::uint8_t* pdu = nullptr;
-  std::size_t    sz = 0;
+  std::size_t   adu_size = buffer.adu_end - buffer.begin;
+  std::size_t   pdu_size = 0;
   
-  if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
+  if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
-    if ( (context.adu_end - context.begin) >= MinAduSize )
+    if ( adu_size >= kAsciiWrapSize )
     {
-      std::uint8_t* pdu_end = context.adu_end - 2u /*lrc8*/ - 2u /* 0x0D + 0x0A */;
-      pdu = context.begin + PduStartPos;  
+      std::uint8_t* pdu_end = buffer.adu_end - 2u /*lrc8*/ - 2u /* 0x0D + 0x0A */;
+      pdu = buffer.begin + kPduStartOffset;
       
       if ( AsciiToByteArray( pdu, pdu_end ) == ERROR_NONE )
       {
-        sz  = ( pdu_end - pdu ) >> 1;
-        sz  = ( sz > MaxPduSize ) ? MaxPduSize : sz;
+        pdu_size  = ( pdu_end - pdu ) >> 1;
+        pdu_size  = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
       }
       else
       {
-        sz = 0;
         pdu = nullptr;
       }
     }
   }
   
   
-  return { pdu, sz };
+  return { pdu, pdu_size };
 }
 
 
@@ -271,19 +247,20 @@ auto AsciiStrategy::ExtractPdu( AduContext& context ) -> std::pair< std::uint8_t
 
 
 
-auto AsciiStrategy::GetAduInfo( AduContext& context ) -> std::pair< std::uint8_t, std::uint16_t > 
+auto AsciiStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std::uint16_t >
 {
-  std::uint8_t ret = DummyServerAddr;
-  
-  if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
+  std::uint8_t ret = kDummyUnitId;
+  std::size_t   adu_size = buffer.adu_end - buffer.begin;
+
+  if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
-    if ( (context.adu_end - context.begin) >= MinAduSize )
+    if ( adu_size >= kAsciiWrapSize )
     {
-      ret = ( (context.begin[ServerAddrPosHi] & 0x0f) << 4 ) | ( context.begin[ServerAddrPosLo] & 0x0f );
+      ret = ( (buffer.begin[kServerAddrPosHi] & 0x0f) << 4 ) | ( buffer.begin[kServerAddrPosLo] & 0x0f );
     }
   }
       
-  return { ret, DummyTransactionId };
+  return { ret, kDummyTransactionId };
 }
 
 
@@ -296,31 +273,37 @@ auto AsciiStrategy::GetAduInfo( AduContext& context ) -> std::pair< std::uint8_t
 
 
 
-auto CreateAdu( AduContext& context, std::uint8_t id, std::16_t tid, std::size_t pdu_sz ) -> Error
+auto AsciiStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
 {
   Error err = ERROR_FAILED;
       
-  if ( ( context.begin != nullptr ) && ( context.end > context.begin ) )
+  if ( ( buffer.begin != nullptr ) && ( buffer.end > buffer.begin ) )
   {
-    std::size_t   adu_sz  = ( pdu_sz << 1 ) + 7u;
+    std::size_t   adu_max_size = buffer.end - buffer.begin;
+    std::size_t   pdu_max_size = (adu_max_size > kAsciiWrapSize) ? 
+                                   (adu_max_size - kAsciiWrapSize)/2u : 0u;
+    std::uint8_t* ptr = buffer.begin;
     
-    if ( ( context.end - context.begin ) >= adu_sz )
+    if ( pdu_max_size != 0 )
     {
-      std::uint8_t* adu_ptr = context.begin;
-         
-     *adu_ptr++ = ':'; 
-      adu_ptr = ByteToAscii( adu_ptr, id );
-      adu_ptr = ByteArrayToAscii( adu_ptr, adu_ptr + pdu_sz, context.end );
+      std::size_t pdu_size = cmd->CreateRequest(ptr+kPduStartOffset, pdu_max_size);
       
-      if ( adu_ptr != nullptr )
-      {    
-        std::uint8_t lrc = CalculateLrc8(_begin, adu_ptr);
-        adu_ptr = ByteToAscii( adu_ptr, lrc );   
-       *adu_ptr++ = 0x0D; 
-       *adu_ptr++ = 0x0A; 
-        context.adu_end = adu_ptr;
+      if ( pdu_size != 0u )
+      {
+        *ptr++ = ':'; 
+         ptr = ByteToAscii( ptr, cmd->GetUnitId() );
+         ptr = ByteArrayToAscii( ptr, ptr + pdu_size, buffer.end );
+      
+        if ( ptr != nullptr )
+        {    
+          std::uint8_t lrc = CalculateLrc8( buffer.begin, ptr);
+          ptr = ByteToAscii( ptr, lrc );   
+         *ptr++ = 0x0D; 
+         *ptr++ = 0x0A; 
+          buffer.adu_end = ptr;
        
-        err = ERROR_NONE;
+          err = ERROR_NONE;
+        }
       }
     }
   }
@@ -330,5 +313,10 @@ auto CreateAdu( AduContext& context, std::uint8_t id, std::16_t tid, std::size_t
 
 
 
+
+Error AsciiStrategy::CreateAdu( Buffer&, Result* )
+{
+  return ERROR_NOT_IMPLEMENTED;  
+} 
 
 

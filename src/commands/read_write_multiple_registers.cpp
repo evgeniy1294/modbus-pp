@@ -5,7 +5,7 @@ using namespace modbus;
 
 ReadWriteMultipleRegisters::ReadWriteMultipleRegisters( void* context, 
                               std::uint8_t* read_ptr,  std::size_t read_addr,  std::size_t read_count,
-                              std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count ); 
+                              std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count )
 {
   _context = context;
   _read_ptr    = read_ptr;          
@@ -39,8 +39,8 @@ std::size_t ReadWriteMultipleRegisters::CreateRequest( std::uint8_t* pdu, std::s
     *pdu++ = _write_count & 0xffu;
     *pdu++ = byte_count;
      
-    std::uint8_t end  = _write_ptr + byte_count;
-    std::uint8_t ptr  = _write_ptr; 
+    std::uint8_t* end  = _write_ptr + byte_count;
+    std::uint8_t* ptr  = _write_ptr;
     while( ptr < end )
     {
       // TODO: Добавить поддержку big-endian

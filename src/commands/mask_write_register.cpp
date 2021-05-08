@@ -8,7 +8,7 @@ MaskWriteRegister::MaskWriteRegister( void* context, std::size_t addr, std::uint
   _context = context;
   _addr    = addr;
   _ormask  = ormask;
-  _andmask = andmask
+  _andmask = andmask;
 }
 
 

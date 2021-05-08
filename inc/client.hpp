@@ -7,7 +7,7 @@
 
 namespace modbus {
   
-  class Client:: public Logic, public CommunicationInterface {
+  class Client: public Logic, public CommunicationInterface {
     public:
       Client( std::function< Error ( AduContext& ) > ReadIncomingMessage,
               std::function< Error ( AduContext& ) > StartTransaction,

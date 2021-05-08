@@ -22,7 +22,8 @@ namespace modbus {
   using ModbusId        = std::uint8_t;
   
   
-  
+  constexpr std::uint8_t  kDummyUnitId = 0;
+  constexpr std::uint16_t kDummyTransactionId = 0;
   
   
   
@@ -50,10 +51,10 @@ namespace modbus {
   
   
   
-  struct Adu {
-    std::uint8_t begin   = nullptr;
-    std::uint8_t adu_end = nullptr;
-    std::uint8_t end     = nullptr;
+  struct Buffer {
+    std::uint8_t* begin   = nullptr;
+    std::uint8_t* adu_end = nullptr;
+    std::uint8_t* end     = nullptr;
   };
   
 } // namespace modbus

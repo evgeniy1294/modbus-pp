@@ -35,7 +35,7 @@ std::size_t WriteMultipleCoils::CreateRequest( std::uint8_t* pdu, std::size_t sz
         
     
     std::uint8_t* iter = _ptr;
-    std::uint8_t* end = iter + byte_count
+    std::uint8_t* end = iter + byte_count;
     
     while( iter < end )
     {

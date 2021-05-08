@@ -1,7 +1,8 @@
 #pragma once
 
 #include <optional>
-#include "spec.hpp"
+#include "defs.hpp"
+#include "error.hpp"
 
 
 
@@ -11,7 +12,7 @@ namespace modbus {
     friend Logic;
           
     public:
-      Error Sync( std::size_t reg, std::size_t   count, op );
+      Error Sync( std::size_t reg, std::size_t   count, Access op );
       // Diagnostic
       Error Set ( std::size_t reg, std::uint16_t value );
       std::optional< std::uint16_t > Get( std::size_t reg );
@@ -21,7 +22,7 @@ namespace modbus {
       Node ( ModbusId id, Logic* logic, Storage* storage, Observer* observer = nullptr );
       
     private:
-      Error Update( FunctionCode fc, ExceptionId ei, std::uint8_t* ptr, std::size_t sz );
+      Error Update(/*Command*/ ExceptionId ei, std::uint8_t* ptr, std::size_t sz );
     
 
     private:

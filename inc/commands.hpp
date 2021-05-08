@@ -1,13 +1,16 @@
 #pragma once
-#include "node.hpp"
-#include "logic.hpp"
+
+#include "error.hpp"
 
 
 namespace modbus 
 {
   class Command
   {
-    public:   
+    public:
+      // TODO: Use Node->ID after test
+      std::uint8_t GetUnitId() { return 1; }
+
       // For Client
       virtual std::size_t CreateRequest ( std::uint8_t* pdu, std::size_t maxsz ) = 0;
       virtual Error HandleResponce( std::uint8_t* pdu, std::size_t sz )    = 0;
@@ -68,7 +71,7 @@ namespace modbus
       Error HandleRequest ( std::uint8_t* pdu, std::size_t sz ) override; 
     
     private:
-      ~ReadDiscreteInputs() = default
+      ~ReadDiscreteInputs() = default;
     
     private:
       std::uint8_t*  _ptr;           ///< Pointer to data
@@ -117,7 +120,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
     
     public:
-      ReadDiscreteInputs(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
+      ReadInputRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       
       std::size_t CreateRequest ( std::uint8_t* pdu, std::size_t maxsz ) override;
       Error HandleResponce( std::uint8_t* pdu, std::size_t sz ) override;
@@ -126,7 +129,7 @@ namespace modbus
       Error HandleRequest ( std::uint8_t* pdu, std::size_t sz ) override; 
     
     private:
-      ~ReadDiscreteInputs() = default;
+      ~ReadInputRegisters() = default;
     
     private:
       std::uint8_t*  _ptr;           ///< Pointer to data
