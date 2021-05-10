@@ -273,7 +273,7 @@ auto AsciiStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std
 
 
 
-auto AsciiStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
+auto AsciiStrategy::CreateAdu( Buffer& buffer, Message* msg ) -> Error
 {
   Error err = ERROR_FAILED;
       
@@ -286,12 +286,12 @@ auto AsciiStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
     
     if ( pdu_max_size != 0 )
     {
-      std::size_t pdu_size = cmd->Serialize(ptr+kPduStartOffset, pdu_max_size);
+      std::size_t pdu_size = msg->Serialize(ptr+kPduStartOffset, pdu_max_size);
       
       if ( pdu_size != 0u )
       {
         *ptr++ = ':'; 
-         ptr = ByteToAscii( ptr, cmd->GetUnitId() );
+         ptr = ByteToAscii( ptr, msg->GetUnitId() );
          ptr = ByteArrayToAscii( ptr, ptr + pdu_size, buffer.end );
       
         if ( ptr != nullptr )
@@ -313,10 +313,5 @@ auto AsciiStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
 
 
 
-
-Error AsciiStrategy::CreateAdu( Buffer&, Result* )
-{
-  return ERROR_NOT_IMPLEMENTED;  
-} 
 
 

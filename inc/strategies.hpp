@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <utility>
 
+#include "defs.hpp"
 #include "commands.hpp"
 #include "result.hpp"
-#include "defs.hpp"
 
 
 namespace modbus
@@ -13,10 +13,11 @@ namespace modbus
   
   class AduStrategy {
     public:
-      virtual Error Check ( Buffer&& ) = 0;
-      virtual Error CreateAdu( Buffer&, Command* ) = 0;
-      virtual Error CreateAdu( Buffer&, Result*  ) = 0;
+      virtual Error Check ( Buffer& ) = 0;
+      virtual Error CreateAdu( Buffer&, Message* ) = 0;
       virtual std::pair< std::uint8_t , std::uint16_t > GetAduInfo( Buffer& ) = 0;
+      
+      // Maybe should be changed on ExtractMessage
       virtual std::pair< std::uint8_t*, std::size_t >   ExtractPdu( Buffer& ) = 0;
 
     protected:
@@ -40,9 +41,8 @@ namespace modbus
       constexpr static std::size_t kPduStartOffset  = 3u;
     
     public:
-      Error Check ( Buffer& );
-      Error CreateAdu( Buffer&, Command* ) override;
-      Error CreateAdu( Buffer&, Result*  ) override;
+      Error Check ( Buffer& ) override;
+      Error CreateAdu( Buffer&, Message* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
       std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 
@@ -67,8 +67,7 @@ namespace modbus
     
     public:
       Error Check ( Buffer& );
-      Error CreateAdu( Buffer&, Command* ) override;
-      Error CreateAdu( Buffer&, Result*  ) override;
+      Error CreateAdu( Buffer&, Message* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
       std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 
@@ -95,8 +94,7 @@ namespace modbus
     
     public:
       Error Check ( Buffer& );
-      Error CreateAdu( Buffer&, Command* ) override;
-      Error CreateAdu( Buffer&, Result*  ) override;
+      Error CreateAdu( Buffer&, Message* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
       std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 

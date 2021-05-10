@@ -71,7 +71,7 @@ auto TcpStrategy::GetAduInfo( Buffer& context ) -> std::pair< std::uint8_t, std:
 
     
 
-auto  TcpStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
+auto  TcpStrategy::CreateAdu( Buffer& buffer, Message* msg ) -> Error
 {
   Error err = ERROR_FAILED;
       
@@ -83,7 +83,7 @@ auto  TcpStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
     
     if ( pdu_max_size != 0u )
     {          
-      std::size_t pdu_size = cmd->Serialize(ptr+kPduStartOffset, pdu_max_size);
+      std::size_t pdu_size = msg->Serialize(ptr+kPduStartOffset, pdu_max_size);
       
       if ( pdu_size != 0u )
       {
@@ -96,7 +96,7 @@ auto  TcpStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
         *ptr++ = 0;
         *ptr++ = (length >> 8) & 0xff;
         *ptr++ = length & 0xff;
-        *ptr++ = cmd->GetUnitId();
+        *ptr++ = msg->GetUnitId();
           
         buffer.adu_end = ptr + pdu_size;
       
@@ -112,9 +112,3 @@ auto  TcpStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
     
 
     
-    
-Error TcpStrategy::CreateAdu( Buffer& buffer, Result* )
-{
-  return ERROR_NOT_IMPLEMENTED;  
-} 
-

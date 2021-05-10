@@ -1,25 +1,12 @@
 #pragma once
 
-#include "error.hpp"
+#include "message.hpp"
 
 
 namespace modbus 
 {
-  class Command
-  {
-    public:
-      // TODO: Use Node->ID after test
-      std::uint8_t GetUnitId() { return 1; }
-      virtual std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) = 0;
-      // Maybe should add Handle() method?
-      
-    protected:
-      virtual ~Command() = default;
-    
-    protected:
-      void* _context;               ///< Pointer to Node 
-  };
-  
+
+  using Command = Message;
   
   
   class ReadCoils: public Command
@@ -32,7 +19,7 @@ namespace modbus
       ReadCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);    
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       
-    private:
+    //private:
       ~ReadCoils() = default;
     
     private:
@@ -54,7 +41,7 @@ namespace modbus
       ReadDiscreteInputs(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);    
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~ReadDiscreteInputs() = default;
     
     private:
@@ -78,7 +65,7 @@ namespace modbus
       ReadHoldingRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~ReadHoldingRegisters() = default;
     
     private:
@@ -102,7 +89,7 @@ namespace modbus
       ReadInputRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~ReadInputRegisters() = default;
     
     private:
@@ -127,7 +114,7 @@ namespace modbus
       WriteSingleCoil(void* context, std::uint8_t value, std::size_t addr);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~WriteSingleCoil() = default;
     
     private:
@@ -147,15 +134,15 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
       
     public:
-      WriteSingleRegister(void* context, std::uint8_t value, std::size_t addr);   
+      WriteSingleRegister(void* context, std::uint16_t value, std::size_t addr);
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~WriteSingleRegister() = default;
     
     private:
-      std::uint8_t  _value;          ///< Pointer to data
-      std::size_t   _addr;           ///< Modbus data logic address 
+      std::uint16_t  _value;
+      std::size_t   _addr;
       
   };
   
@@ -175,7 +162,7 @@ namespace modbus
       ReadExceptionStatus(void* context);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~ReadExceptionStatus() = default;
   };
   
@@ -196,7 +183,7 @@ namespace modbus
       GetCommEventCounter(void* context);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~GetCommEventCounter() = default;  
       
   };
@@ -217,7 +204,7 @@ namespace modbus
       GetCommEventLog(void* context);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~GetCommEventLog() = default;   
   };
   
@@ -236,7 +223,7 @@ namespace modbus
       WriteMultipleCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~WriteMultipleCoils() = default;
     
     private:
@@ -260,7 +247,7 @@ namespace modbus
       WriteMultipleRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+    //private:
       ~WriteMultipleRegisters() = default;
     
     private:
@@ -284,7 +271,7 @@ namespace modbus
       ReportSlaveId(void* context);   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~ReportSlaveId() = default;    
   };
   
@@ -306,7 +293,7 @@ namespace modbus
       MaskWriteRegister( void* context, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );   
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~MaskWriteRegister() = default;     
     
     private:
@@ -333,7 +320,7 @@ namespace modbus
       
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
-    private:
+   // private:
       ~ReadWriteMultipleRegisters() = default;
     
     private:

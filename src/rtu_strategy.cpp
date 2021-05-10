@@ -76,7 +76,7 @@ auto RtuStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std::
 
 
 
-auto RtuStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
+auto RtuStrategy::CreateAdu( Buffer& buffer, Message* msg ) -> Error
 {
   Error err = ERROR_FAILED;
   
@@ -88,11 +88,11 @@ auto RtuStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
     
     if ( pdu_max_size != 0u )
     {
-      std::size_t pdu_size = cmd->Serialize(ptr+kPduStartOffset, pdu_max_size);
+      std::size_t pdu_size = msg->Serialize(ptr+kPduStartOffset, pdu_max_size);
       
       if ( pdu_size != 0u )
       {
-        *ptr = cmd->GetUnitId();
+        *ptr = msg->GetUnitId();
         ptr  = ptr + pdu_size + kPduStartOffset;
         
         std::uint16_t crc16 = CalculateCrc16( buffer.begin, ptr );
@@ -107,13 +107,6 @@ auto RtuStrategy::CreateAdu( Buffer& buffer, Command* cmd ) -> Error
       
   return err;
 }
-
-
-
-Error RtuStrategy::CreateAdu( Buffer&, Result* )
-{
-  return ERROR_NOT_IMPLEMENTED;  
-} 
 
 
 
