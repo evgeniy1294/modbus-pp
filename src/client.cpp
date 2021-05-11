@@ -5,9 +5,9 @@
 using namespace modbus;
 
 
-Client::Client( std::function< Error ( AduContext& ) > ReadIncomingMessage,
-                std::function< Error ( AduContext& ) > StartTransaction,
-                std::function< Error ( AduContext& ) > GetTransmitBuffer )
+Client::Client( std::function< Error ( Buffer& ) > ReadIncomingMessage,
+                std::function< Error ( Buffer& ) > StartTransaction,
+                std::function< Error ( Buffer& ) > GetTransmitBuffer )
 {
   _ReadIncomingMessage = ReadIncomingMessage;
   _StartTransaction    = StartTransaction; 
@@ -28,13 +28,13 @@ auto Client::CreateNode ( ModbusId id, Storage* storage, Observer* observer ) ->
 
     
     
-    
+    /*
 auto  Client::InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) -> Error
 {
   _RequestQueue.emplace( node, fc, ptr, reg, count );
   return ERROR_NONE;
 }
-
+*/
 
 
 
@@ -50,22 +50,25 @@ void  Client::Process()
         if ( !_RequestQueue.empty() )
         {
           Command* cmd = _RequestQueue.front();
-          Error err = _strategy->CreateAdu( cmd, adu );  // adu - буфер для adu { start, end, end_adu }
-          
-          if ( err == ERROR_NONE )
+
+          if ( _GetTransmitBuffer(buf) == ERROR_NONE )
           {
-            err = Send( adu );
-            _state = ( err == ERROR_NONE ) ? State::Response : State::Request;
-          }
-          else
-          {
-            _RequestQueue.pop();
-            delete cmd;
-          }
+            Error err = _strategy->CreateAdu( buf, cmd );
           
+            if ( err == ERROR_NONE )
+            {
+              err = _StartTransaction( buf );
+              _state = ( err == ERROR_NONE ) ? State::Response : State::Request;
+            }
+            else
+            {
+              _RequestQueue.pop();
+              delete cmd;         // Кто должен убить команду?
+            }
           
-          if ( err != ERROR_NONE )
-            std::cout << "Client:Process:Request: " << toString(err) << std::endl;   
+            if ( err != ERROR_NONE )
+              std::cout << "Client:Process:Request: " << toString(err) << std::endl;
+          }
         }
         
       } break;

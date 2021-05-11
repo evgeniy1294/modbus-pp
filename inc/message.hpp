@@ -10,6 +10,9 @@ namespace modbus
     public:
       // TODO: Use Node->ID after test
       std::uint8_t GetUnitId() { return 1; }
+
+    public:
+      virtual std::uint8_t GetCode () = 0;
       virtual std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) = 0;
       // Maybe should add Handle() method?
       

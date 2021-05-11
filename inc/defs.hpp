@@ -26,19 +26,7 @@ namespace modbus {
   constexpr std::uint16_t kDummyTransactionId = 0;
   
   
-  
-  enum class ExceptionId: std::uint8_t {
-    None                                   = 0x00u,
-    IllegalFunction                        = 0x01u,
-    IllegalDataAddress                     = 0x02u,
-    IllegalDataValue                       = 0x03u,
-    ServerDeviceFailure                    = 0x04u,
-    Acknowledge                            = 0x05u,
-    ServerDeviceBusy                       = 0x06u,
-    MemoryParityError                      = 0x08u,
-    GatewayPathUnavailable                 = 0x0Au,
-    GatewayTargetDeviceFailedToRespond     = 0x0Bu,
-  };
+
   
   
   

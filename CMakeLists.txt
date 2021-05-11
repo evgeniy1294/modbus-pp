@@ -22,6 +22,7 @@ aux_source_directory("${CMAKE_CURRENT_LIST_DIR}/src/commands" COMMANDS)
 target_sources("${CMAKE_PROJECT_NAME}.elf" PRIVATE
                    ${CMAKE_CURRENT_LIST_DIR}/test/main.cpp
                    ${COMMANDS}
+                   ${CMAKE_CURRENT_LIST_DIR}/src/unit.cpp
                    ${CMAKE_CURRENT_LIST_DIR}/src/ascii_strategy.cpp
                    ${CMAKE_CURRENT_LIST_DIR}/src/rtu_strategy.cpp
                    ${CMAKE_CURRENT_LIST_DIR}/src/tcp_strategy.cpp )

@@ -7,16 +7,16 @@
 
 namespace modbus {
   
-  class Client: public Logic, public CommunicationInterface {
+  class Client: public Logic {
     public:
-      Client( std::function< Error ( AduContext& ) > ReadIncomingMessage,
-              std::function< Error ( AduContext& ) > StartTransaction,
-              std::function< Error ( AduContext& ) > GetTransmitBuffer );
+      Client( std::function< Error ( Buffer& ) > ReadIncomingMessage,
+              std::function< Error ( Buffer& ) > StartTransaction,
+              std::function< Error ( Buffer& ) > GetTransmitBuffer );
      ~Client(); 
       
     public:
       Error CreateNode ( ModbusId id, Storage* storage, Observer* observer );
-      Error InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) override;
+      //Error InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) override;
       void  Process();
       
     private:
@@ -27,11 +27,12 @@ namespace modbus {
       Error DeserializeResponse( Buffer& buf );
       
     private:
-      std::function< Error ( AduContext& ) > _ReadIncomingMessage;
-      std::function< Error ( AduContext& ) > _StartTransaction;
-      std::function< Error ( AduContext& ) > _GetTransmitBuffer;
-      
-      std::queue < Request > _RequestQueue;
+      std::function< Error ( Buffer& ) > _ReadIncomingMessage;
+      std::function< Error ( Buffer& ) > _StartTransaction;
+      std::function< Error ( Buffer& ) > _GetTransmitBuffer;
+      Buffer buf;
+
+      std::queue < Command* > _RequestQueue;
       std::vector< Node > _NodeList;
   };
   
