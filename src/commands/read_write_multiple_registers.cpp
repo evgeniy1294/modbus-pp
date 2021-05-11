@@ -3,11 +3,11 @@
 using namespace modbus;
 
 
-ReadWriteMultipleRegisters::ReadWriteMultipleRegisters( void* context, 
+ReadWriteMultipleRegisters::ReadWriteMultipleRegisters( std::uint8_t unit_id,
                               std::uint8_t* read_ptr,  std::size_t read_addr,  std::size_t read_count,
                               std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count )
 {
-  _context = context;
+  _unit_id     = unit_id;
   _read_ptr    = read_ptr;          
   _read_addr   = read_addr;          
   _read_count  = read_count;         

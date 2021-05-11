@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-MaskWriteRegister::MaskWriteRegister( void* context, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask )
+MaskWriteRegister::MaskWriteRegister( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask )
 {
-  _context = context;
+  _unit_id = unit_id;
   _addr    = addr;
   _ormask  = ormask;
   _andmask = andmask;

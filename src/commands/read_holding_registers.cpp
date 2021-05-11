@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-ReadHoldingRegisters::ReadHoldingRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count)
+ReadHoldingRegisters::ReadHoldingRegisters(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count)
 {
-  _context = context;
+  _unit_id = unit_id;
   _ptr     = ptr;
   _addr    = addr;
   _count   = count;

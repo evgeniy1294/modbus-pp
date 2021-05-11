@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-GetCommEventLog::GetCommEventLog(void* context)
+GetCommEventLog::GetCommEventLog(std::uint8_t unit_id)
 {
-  _context = context;
+  _unit_id = unit_id;
 }
 
 

@@ -12,18 +12,15 @@ namespace modbus
   class Unit
   {
     public:
-      Unit ( std::uint8_t id, Logic* logic, Storage* storage, Observer* observer = nullptr );
-      Result* Execute(Command* cmd);
-      void Accept (Result* result);
-      Error Sync( std::size_t reg, std::size_t count, Access op );
+      void SetLogic(Logic* logic) { _logic = logic; }
+      std::uint8_t GetUnitId() { return _id; }
 
     public:
-      // std::uint16_t& operator[]( const std::size_t addr );
+      virtual Result* Execute(Command* cmd) = 0;
+      virtual void Accept (Result* result) = 0;
 
     private:
       std::uint8_t _id;
       Logic* _logic;
-      Storage* _storage;
-      Observer* _observer;
   };
 }

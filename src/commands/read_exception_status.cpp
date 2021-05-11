@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-ReadExceptionStatus::ReadExceptionStatus(void* context)
+ReadExceptionStatus::ReadExceptionStatus(std::uint8_t unit_id)
 {
-  _context = context;
+  _unit_id = unit_id;
 }
 
 

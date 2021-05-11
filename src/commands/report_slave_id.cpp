@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-ReportSlaveId::ReportSlaveId(void* context)
+ReportSlaveId::ReportSlaveId(std::uint8_t unit_id)
 {
-  _context = context;
+  _unit_id = unit_id;
 }
 
 

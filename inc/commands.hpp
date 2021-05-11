@@ -16,7 +16,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
     
     public:
-      ReadCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      ReadCoils(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       
@@ -39,7 +39,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
     
     public:
-      ReadDiscreteInputs(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      ReadDiscreteInputs(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -64,7 +64,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
     
     public:
-      ReadHoldingRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
+      ReadHoldingRegisters(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -89,7 +89,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
     
     public:
-      ReadInputRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      ReadInputRegisters(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -115,7 +115,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
       
     public:
-      WriteSingleCoil(void* context, std::uint8_t value, std::size_t addr);   
+      WriteSingleCoil(std::uint8_t unit_id, std::uint8_t value, std::size_t addr);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -139,7 +139,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 5u;
       
     public:
-      WriteSingleRegister(void* context, std::uint16_t value, std::size_t addr);
+      WriteSingleRegister(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -165,7 +165,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 1u;    
     
     public:
-      ReadExceptionStatus(void* context);   
+      ReadExceptionStatus( std::uint8_t unit_id );
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -187,7 +187,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 1u;    
     
     public:
-      GetCommEventCounter(void* context);   
+      GetCommEventCounter( std::uint8_t unit_id );
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -209,7 +209,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 1u;    
     
     public:
-      GetCommEventLog(void* context);   
+      GetCommEventLog( std::uint8_t unit_id );
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -229,7 +229,7 @@ namespace modbus
       constexpr static std::uint8_t kCode = 0x0Fu;
     
     public:
-      WriteMultipleCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      WriteMultipleCoils(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -254,7 +254,7 @@ namespace modbus
       constexpr static std::uint8_t kCode = 0x10u;
     
     public:
-      WriteMultipleRegisters(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count);   
+      WriteMultipleRegisters(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -279,7 +279,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 1u;    
     
     public:
-      ReportSlaveId(void* context);   
+      ReportSlaveId(std::uint8_t unit_id);
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -302,7 +302,7 @@ namespace modbus
       constexpr static std::size_t  kRequestPduSize = 7u;    
     
     public:
-      MaskWriteRegister( void* context, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
+      MaskWriteRegister( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
       std::uint8_t GetCode () override { return kCode; }
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
     
@@ -327,7 +327,7 @@ namespace modbus
       constexpr static std::uint8_t kCode = 0x10u;
     
     public:
-      ReadWriteMultipleRegisters( void* context, 
+      ReadWriteMultipleRegisters( std::uint8_t unit_id,
                                   std::uint8_t* read_ptr,  std::size_t read_addr,  std::size_t read_count,
                                   std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count );
 

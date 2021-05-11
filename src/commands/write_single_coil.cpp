@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-WriteSingleCoil::WriteSingleCoil(void* context, std::uint8_t value, std::size_t addr)
+WriteSingleCoil::WriteSingleCoil(std::uint8_t unit_id, std::uint8_t value, std::size_t addr)
 {
-  _context = context;
+  _unit_id = unit_id;
   _value   = ( value == 0u ) ? 0x00u : 0xFFu;
   _addr    = addr;
 }

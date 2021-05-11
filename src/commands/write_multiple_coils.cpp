@@ -4,9 +4,9 @@
 using namespace modbus;
 
 
-WriteMultipleCoils::WriteMultipleCoils(void* context, std::uint8_t* ptr, std::size_t addr, std::size_t count)
+WriteMultipleCoils::WriteMultipleCoils(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count)
 {
-  _context = context;
+  _unit_id = unit_id;
   _ptr     = ptr;
   _addr    = addr;
   _count   = count;

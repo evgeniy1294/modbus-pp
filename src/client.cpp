@@ -18,23 +18,26 @@ Client::Client( std::function< Error ( Buffer& ) > ReadIncomingMessage,
 
 
 
-auto Client::CreateNode ( ModbusId id, Storage* storage, Observer* observer ) -> Error 
+
+
+
+Error Client::PushCommand( Command* cmd )
 {
-  _NodeList.emplace_back( id, this, storage, observer );  
+  _CommandQueue.push( cmd );
+
   return ERROR_NONE;
 }
-    
 
 
-    
-    
-    /*
-auto  Client::InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) -> Error
+
+
+
+
+Error Client::AttachUnit( Unit* unit )
 {
-  _RequestQueue.emplace( node, fc, ptr, reg, count );
+  _UnitList.push_back( unit );
   return ERROR_NONE;
 }
-*/
 
 
 
@@ -42,6 +45,88 @@ auto  Client::InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, 
 
 
 
+void Client::DetachUnit( Unit* unit )
+{
+  // Удалить команды юнита из списка
+
+  // Удалить unit из списка
+
+  return;
+}
+
+
+
+    
+    
+
+
+
+void Client::Process()
+{
+  switch ( _state ) {
+    case State::Request:
+      RequestStateProcess();
+      break;
+
+    case State::Response:
+      ResponseStateProcess();
+      break;
+  }
+}
+
+
+
+
+
+
+
+void Client::RequestStateProcess()
+{
+  Buffer buf;
+
+  if ( !_CommandQueue.empty() )
+  {
+    if ( _GetTransmitBuffer(buf) == ERROR_NONE )
+    {
+      Command* cmd = _CommandQueue.front();
+      Error err = _strategy->CreateAdu(buf, cmd );
+
+      if ( err == ERROR_NONE )
+      {
+        _StartTransaction( buf );
+      }
+      else
+      {
+        _CommandQueue.pop();
+        delete cmd;
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+void Client::ResponseStateProcess()
+{
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
 void  Client::Process()
 {
   switch ( _state ) {
@@ -102,7 +187,7 @@ void  Client::Process()
   return;
 }
 
-
+*/
 
 
 

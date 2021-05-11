@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-GetCommEventCounter::GetCommEventCounter(void* context)
+GetCommEventCounter::GetCommEventCounter(std::uint8_t unit_id)
 {
-  _context = context;
+  _unit_id = unit_id;
 }
 
 

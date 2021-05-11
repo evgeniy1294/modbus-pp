@@ -15,25 +15,27 @@ namespace modbus {
      ~Client(); 
       
     public:
-      Error CreateNode ( ModbusId id, Storage* storage, Observer* observer );
-      //Error InitiateRequest ( Node* node, FunctionCode fc, std::uint8_t* ptr, std::size_t reg, std::size_t count ) override;
+      Error PushCommand( Command* cmd ) override;
+      Error AttachUnit ( Unit* unit )   override;
+      void  DetachUnit ( Unit* unit )   override;
       void  Process();
       
     private:
       enum class State { Request, Response } _state = State::Request;
       
     private:
-      Error SerializeRequest( Buffer& buf, Request req );
-      Error DeserializeResponse( Buffer& buf );
-      
+      Unit* FindUnitById( std::uint8_t unit_id );
+      void RequestStateProcess();
+      void ResponseStateProcess();
+
+
     private:
       std::function< Error ( Buffer& ) > _ReadIncomingMessage;
       std::function< Error ( Buffer& ) > _StartTransaction;
       std::function< Error ( Buffer& ) > _GetTransmitBuffer;
-      Buffer buf;
 
-      std::queue < Command* > _RequestQueue;
-      std::vector< Node > _NodeList;
+      std::queue < Command* > _CommandQueue;
+      std::vector< Unit* > _UnitList;
   };
   
 } // namespace modbus

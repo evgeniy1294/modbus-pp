@@ -3,9 +3,9 @@
 using namespace modbus;
 
 
-WriteSingleRegister::WriteSingleRegister(void* context, std::uint16_t value, std::size_t addr)
+WriteSingleRegister::WriteSingleRegister(std::uint8_t unit_id, std::uint16_t value, std::size_t addr)
 {
-  _context = context;
+  _unit_id = unit_id;
   _value   = value;
   _addr    = addr;
 }
