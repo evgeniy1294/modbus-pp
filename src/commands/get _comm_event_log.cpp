@@ -1,26 +1,27 @@
 #include "commands.hpp"
 
-using namespace modbus;
+namespace modbus::cmd {
 
 
-GetCommEventLog::GetCommEventLog(std::uint8_t unit_id)
-{
-  _unit_id = unit_id;
-}
-
-
-
-
-
-
-std::size_t GetCommEventLog::Serialize( std::uint8_t *pdu, std::size_t sz )
-{
-  std::size_t ret = 0;
-      
-  if ( sz >= kRequestPduSize ) { 
-    *pdu = kCode;
-    ret = kRequestPduSize;
+  GetCommEventLog::GetCommEventLog(std::uint8_t unit_id)
+  {
+    _unit_id = unit_id;
   }
-      
-  return ret;
-}
+
+
+
+
+  std::size_t GetCommEventLog::Serialize( std::uint8_t *pdu, std::size_t sz )
+  {
+    std::size_t ret = 0;
+
+    if ( sz >= kRequestPduSize ) {
+      *pdu = kCode;
+      ret = kRequestPduSize;
+    }
+
+    return ret;
+  }
+
+
+} // namespace modbus::cmd

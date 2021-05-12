@@ -1,6 +1,7 @@
 #include "client.hpp"
 #include <iostream>
-#include <cstring>
+
+
 
 using namespace modbus;
 
@@ -112,7 +113,20 @@ void Client::RequestStateProcess()
 
 void Client::ResponseStateProcess()
 {
+  using namespace std::chrono;
+  Buffer buf;
 
+  if ( high_resolution_clock::now() < timestamp + 200ms )
+  {
+    if ( _ReadIncomingMessage( buf ) == ERROR_NONE )
+    {
+      // Extract Result
+    }
+  }
+  else
+  {
+    // Start retransmission
+  }
 
 }
 

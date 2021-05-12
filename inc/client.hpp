@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <chrono>
 #include "logic.hpp"
 
 // Temporary include
@@ -22,6 +23,7 @@ namespace modbus {
       
     private:
       enum class State { Request, Response } _state = State::Request;
+      std::chrono::time_point<std::chrono::high_resolution_clock> timestamp;
       
     private:
       Unit* FindUnitById( std::uint8_t unit_id );
