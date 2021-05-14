@@ -55,3 +55,53 @@ namespace modbus::cmd {
 
 
 } // namespace modbus::cmd
+
+
+
+
+
+
+#include "result.hpp"
+
+
+namespace modbus::result {
+
+
+  WriteMultipleCoils::WriteMultipleCoils( std::uint8_t unit_id, std::size_t addr, std::size_t count )
+  {
+    _unit_id = unit_id;
+    _addr = addr;
+    _count = count;
+  }
+
+
+
+  std::uint8_t WriteMultipleCoils::GetCode()
+  {
+    return cmd::WriteMultipleCoils::kCode;
+  }
+
+
+
+  std::size_t WriteMultipleCoils::Serialize( std::uint8_t *pdu, std::size_t sz )
+  {
+    std::size_t ret = 0;
+
+    if ( sz >= 5u ) {
+      *pdu++ = cmd::WriteSingleRegister::kCode;
+      *pdu++ = (_addr >> 8) & 0xFFu;
+      *pdu++ = _addr & 0xFFu;
+      *pdu++ = (_count >> 8) & 0xFFu;
+      *pdu   = _count & 0xFFu;
+
+      ret = 5u;
+    }
+
+    return ret;
+  }
+
+}
+
+
+
+

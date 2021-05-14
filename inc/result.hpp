@@ -68,18 +68,19 @@ namespace modbus {
     class ReadCoils: public Result
     {
       public:
-        ReadCoils( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count );
+        ReadCoils( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
         std::uint8_t GetCode() override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-        std::pair< std::size_t , std::size_t > GetCoilsRange() { return {_addr, _count}; }
-        std::uint8_t* GetValueStorage() { return _ptr; }
+        std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+        std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
 
       //private:
         ~ReadCoils() = default;
 
       private:
         std::uint8_t* _ptr;
+        std::uint8_t* _end;
         std::size_t   _addr;
         std::size_t   _count;
     };
@@ -91,18 +92,19 @@ namespace modbus {
     class ReadDiscreteInputs: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::ReadDiscreteInputs::kCode;
-
-      public:
-        ReadDiscreteInputs( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count );
-        std::uint8_t GetCode() override { return kCode; }
+        ReadDiscreteInputs( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+        std::uint8_t GetCode() override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+        std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
+        
       //private:
         ~ReadDiscreteInputs() = default;
 
       private:
         std::uint8_t* _ptr;
+        std::uint8_t* _end;
         std::size_t   _addr;
         std::size_t   _count;
     };
@@ -114,18 +116,18 @@ namespace modbus {
     class ReadHoldingRegisters: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::ReadHoldingRegisters::kCode;
-
-      public:
-        ReadHoldingRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count );
-        std::uint8_t GetCode() override { return kCode; }
+        ReadHoldingRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+        std::uint8_t GetCode() override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+        std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
       //private:
         ~ReadHoldingRegisters() = default;
 
       private:
         std::uint8_t* _ptr;
+        std::uint8_t* _end;
         std::size_t   _addr;
         std::size_t   _count;
     };
@@ -137,18 +139,18 @@ namespace modbus {
     class ReadInputRegisters: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::ReadInputRegisters::kCode;
-
-      public:
-        ReadInputRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count );
-        std::uint8_t GetCode() override { return kCode; }
+        ReadInputRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+        std::uint8_t GetCode() override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+        std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
       //private:
         ~ReadInputRegisters() = default;
 
       private:
         std::uint8_t* _ptr;
+        std::uint8_t* _end;
         std::size_t   _addr;
         std::size_t   _count;
     };
@@ -159,19 +161,17 @@ namespace modbus {
     class WriteSingleCoil: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::WriteSingleCoil::kCode;
-
-      public:
-        WriteSingleCoil(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
-        std::uint8_t GetCode () override { return kCode; }
+        WriteSingleCoil( std::uint8_t unit_id, std::uint8_t value, std::size_t addr );
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::uint16_t, std::size_t> GetValue() { return {_value, _addr}; }
       // private:
         ~WriteSingleCoil() = default;
 
       private:
-        std::uint16_t  _value;
-        std::size_t   _addr;
+        std::uint8_t _value;
+        std::size_t _addr;
     };
 
 
@@ -181,13 +181,11 @@ namespace modbus {
     class WriteSingleRegister: public Result
     {
       public:
-        constexpr static std::uint8_t kCode = cmd::WriteSingleRegister::kCode;
-
-      public:
         WriteSingleRegister(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
-        std::uint8_t GetCode () override { return kCode; }
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::uint16_t, std::size_t> GetValue() { return {_value, _addr}; }
      // private:
         ~WriteSingleRegister() = default;
 
@@ -204,18 +202,16 @@ namespace modbus {
     class ReadExceptionStatus: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::ReadExceptionStatus::kCode;
-
-      public:
         ReadExceptionStatus( std::uint8_t unit_id, std::uint8_t status );
-        std::uint8_t GetCode () override { return kCode; }
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::uint8_t GetStatus() { return status; }
       //private:
         ~ReadExceptionStatus() = default;
 
       private:
-        std::uint8_t status;
+        std::uint8_t _status;
     };
 
 
@@ -223,16 +219,32 @@ namespace modbus {
 
 
 
+    class GetCommEventCounter: public Result
+    {
+      public:
+        GetCommEventCounter( std::uint8_t unit_id, std::uint16_t status, std::uint16_t count );
+        std::uint8_t GetCode () override;
+        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+        
+        std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _status, _count}; }
+        
+      private:
+        std::uint16_t _status;
+        std::uint16_t _count;
+    };
+    
+    
+    
+    
     class WriteMultipleCoils: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::WriteMultipleCoils::kCode;
-
-      public:
         WriteMultipleCoils( std::uint8_t unit_id, std::size_t addr, std::size_t count );
-        std::uint8_t GetCode () override { return kCode; }
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _addr, _count}; }
+        
       //private:
         ~WriteMultipleCoils() = default;
 
@@ -247,13 +259,12 @@ namespace modbus {
     class WriteMultipleRegisters: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::WriteMultipleRegisters::kCode;
-
-      public:
         WriteMultipleRegisters( std::uint8_t unit_id, std::size_t addr, std::size_t count );
-        std::uint8_t GetCode () override { return kCode; }
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
+        std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _addr, _count}; }
+        
       //private:
         ~WriteMultipleRegisters() = default;
 
@@ -270,11 +281,8 @@ namespace modbus {
     class MaskWriteRegister: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::MaskWriteRegister::kCode;
-
-      public:
         MaskWriteRegister( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
-        std::uint8_t GetCode () override { return kCode; }
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
       // private:
@@ -292,11 +300,8 @@ namespace modbus {
     class ReadWriteMultipleRegisters: public Result
     {
       public:
-        static constexpr std::uint8_t kCode = cmd::ReadWriteMultipleRegisters::kCode;
-
-      public:
-        ReadWriteMultipleRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t count );
-        std::uint8_t GetCode () override { return kCode; }
+        ReadWriteMultipleRegisters( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
+        std::uint8_t GetCode () override;
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
       // private:
@@ -304,6 +309,7 @@ namespace modbus {
 
       private:
         std::uint8_t* _ptr;
+        std::uint8_t* _end;
         std::size_t   _count;
     };
 
