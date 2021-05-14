@@ -8,96 +8,94 @@ namespace modbus
 
   using Command = Message;
   
-  namespace cmd {
-
-    class ReadCoils: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x01u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class RdCoilsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x01u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
     
-      public:
-        ReadCoils(std::uint8_t unit_id, std::size_t addr, std::size_t count);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      RdCoilsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~ReadCoils() = default;
+    //private:
+      ~RdCoilsCmd() = default;
 
-      private:
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t   _count;          ///< Data length
-    };
+    private:
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t   _count;          ///< Data length
+  };
   
   
   
   
-    class ReadDiscreteInputs: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x02u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class RdDiscreteInputsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x02u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
 
-      public:
-        ReadDiscreteInputs(std::uint8_t unit_id, std::size_t addr, std::size_t count);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      RdDiscreteInputsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~ReadDiscreteInputs() = default;
+    //private:
+      ~RdDiscreteInputsCmd() = default;
 
-      private:
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t  _count;           ///< Data length
-    };
+    private:
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t  _count;           ///< Data length
+  };
   
   
 
 
   
     
-    class ReadHoldingRegisters: public Command
-    {
-       public:
-        constexpr static std::uint8_t kCode = 0x03u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class RdHoldingRegsCmd: public Command
+  {
+     public:
+      constexpr static std::uint8_t kCode = 0x03u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
 
-      public:
-        ReadHoldingRegisters(std::uint8_t unit_id, std::size_t addr, std::size_t count);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      RdHoldingRegsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~ReadHoldingRegisters() = default;
+    //private:
+      ~RdHoldingRegsCmd() = default;
 
-      private:
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t  _count;           ///< Data length
-    };
+    private:
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t  _count;           ///< Data length
+  };
   
   
   
   
   
   
-    class ReadInputRegisters: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x04u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class RdInputRegsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x04u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
 
-      public:
-        ReadInputRegisters(std::uint8_t unit_id, std::size_t addr, std::size_t count);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      RdInputRegsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~ReadInputRegisters() = default;
+    //private:
+      ~RdInputRegsCmd() = default;
 
-      private:
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t  _count;           ///< Data length
-    };
+    private:
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t  _count;           ///< Data length
+  };
   
   
   
@@ -105,49 +103,49 @@ namespace modbus
   
   
   
-    class WriteSingleCoil: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x05u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class WrCoilCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x05u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
 
-      public:
-        WriteSingleCoil(std::uint8_t unit_id, std::uint8_t value, std::size_t addr);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      WrCoilCmd(std::uint8_t unit_id, std::uint8_t value, std::size_t addr);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~WriteSingleCoil() = default;
+   // private:
+      ~WrCoilCmd() = default;
 
-      private:
-        std::uint8_t  _value;          ///< Pointer to data
-        std::size_t   _addr;           ///< Modbus data logic address
-    };
+    private:
+      std::uint8_t  _value;          ///< Pointer to data
+      std::size_t   _addr;           ///< Modbus data logic address
+  };
   
   
   
   
   
   
-    class WriteSingleRegister: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x06u;
-        constexpr static std::size_t  kRequestPduSize = 5u;
+  class WrRegsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x06u;
+      constexpr static std::size_t  kRequestPduSize = 5u;
 
-      public:
-        WriteSingleRegister(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      WrRegsCmd(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~WriteSingleRegister() = default;
+   // private:
+      ~WrRegsCmd() = default;
 
-      private:
-        std::uint16_t  _value;
-        std::size_t   _addr;
+    private:
+      std::uint16_t  _value;
+      std::size_t   _addr;
 
-    };
+  };
   
   
   
@@ -155,20 +153,20 @@ namespace modbus
   
   
   
-    class ReadExceptionStatus: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x07u;
-        constexpr static std::size_t  kRequestPduSize = 1u;
+  class RdExcepStatusCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x07u;
+      constexpr static std::size_t  kRequestPduSize = 1u;
 
-      public:
-        ReadExceptionStatus( std::uint8_t unit_id );
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      RdExcepStatusCmd( std::uint8_t unit_id );
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~ReadExceptionStatus() = default;
-    };
+    //private:
+      ~RdExcepStatusCmd() = default;
+  };
   
   
   
@@ -177,21 +175,21 @@ namespace modbus
   
   
   
-    class GetCommEventCounter: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x0Bu;
-        constexpr static std::size_t  kRequestPduSize = 1u;
+  class GetCommEventCounterCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x0Bu;
+      constexpr static std::size_t  kRequestPduSize = 1u;
 
-      public:
-        GetCommEventCounter( std::uint8_t unit_id );
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      GetCommEventCounterCmd( std::uint8_t unit_id );
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~GetCommEventCounter() = default;
+   // private:
+      ~GetCommEventCounterCmd() = default;
 
-    };
+  };
   
   
   
@@ -199,20 +197,20 @@ namespace modbus
   
   
   
-    class GetCommEventLog: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x0Cu;
-        constexpr static std::size_t  kRequestPduSize = 1u;
+  class GetCommEventLogCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x0Cu;
+      constexpr static std::size_t  kRequestPduSize = 1u;
 
-      public:
-        GetCommEventLog( std::uint8_t unit_id );
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      GetCommEventLogCmd( std::uint8_t unit_id );
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~GetCommEventLog() = default;
-    };
+    //private:
+      ~GetCommEventLogCmd() = default;
+  };
   
   
   
@@ -220,18 +218,18 @@ namespace modbus
   
   
   
-    class WriteMultipleCoils: public Command
+    class WrMulCoilsCmd: public Command
     {
       public:
         constexpr static std::uint8_t kCode = 0x0Fu;
 
       public:
-        WriteMultipleCoils(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+        WrMulCoilsCmd(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
         std::uint8_t GetCode () override { return kCode; }
         std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
       //private:
-        ~WriteMultipleCoils() = default;
+        ~WrMulCoilsCmd() = default;
 
       private:
         std::uint8_t*  _ptr;           ///< Pointer to data
@@ -245,44 +243,44 @@ namespace modbus
   
   
   
-    class WriteMultipleRegisters: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x10u;
+  class WrMulRegsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x10u;
 
-      public:
-        WriteMultipleRegisters(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      WrMulRegsCmd(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-      //private:
-        ~WriteMultipleRegisters() = default;
+    //private:
+      ~WrMulRegsCmd() = default;
 
-      private:
-        std::uint8_t*  _ptr;           ///< Pointer to data
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t  _count;           ///< Data length
-    };
+    private:
+      std::uint8_t*  _ptr;           ///< Pointer to data
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t  _count;           ///< Data length
+  };
   
   
   
   
   
   
-    class ReportSlaveId: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x11u;
-        constexpr static std::size_t  kRequestPduSize = 1u;
+  class ReportSlaveIdCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x11u;
+      constexpr static std::size_t  kRequestPduSize = 1u;
 
-      public:
-        ReportSlaveId(std::uint8_t unit_id);
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      ReportSlaveIdCmd(std::uint8_t unit_id);
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~ReportSlaveId() = default;
-    };
+   // private:
+      ~ReportSlaveIdCmd() = default;
+  };
   
   
   
@@ -292,25 +290,25 @@ namespace modbus
   
   
   
-    class MaskWriteRegister: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x16u;
-        constexpr static std::size_t  kRequestPduSize = 7u;
+  class MaskWrRegsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x16u;
+      constexpr static std::size_t  kRequestPduSize = 7u;
 
-      public:
-        MaskWriteRegister( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+    public:
+      MaskWrRegsCmd( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~MaskWriteRegister() = default;
+   // private:
+      ~MaskWrRegsCmd() = default;
 
-      private:
-        std::size_t   _addr;
-        std::uint16_t _ormask;
-        std::uint16_t _andmask;
-    };
+    private:
+      std::size_t   _addr;
+      std::uint16_t _ormask;
+      std::uint16_t _andmask;
+  };
   
   
   
@@ -318,31 +316,29 @@ namespace modbus
   
   
   
-    class ReadWriteMultipleRegisters: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x10u;
+  class RdWrMulRegsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x10u;
 
-      public:
-        ReadWriteMultipleRegisters( std::uint8_t unit_id,
-                                    std::size_t read_addr,  std::size_t read_count,
-                                    std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count );
+    public:
+      RdWrMulRegsCmd( std::uint8_t unit_id,
+                                  std::size_t read_addr,  std::size_t read_count,
+                                  std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count );
 
-        std::uint8_t GetCode () override { return kCode; }
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+      std::uint8_t GetCode () override { return kCode; }
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
 
-     // private:
-        ~ReadWriteMultipleRegisters() = default;
+   // private:
+      ~RdWrMulRegsCmd() = default;
 
-      private:
-        std::size_t   _read_addr;
-        std::size_t   _read_count;
-        std::uint8_t* _write_ptr;
-        std::size_t   _write_addr;
-        std::size_t   _write_count;
-    };
+    private:
+      std::size_t   _read_addr;
+      std::size_t   _read_count;
+      std::uint8_t* _write_ptr;
+      std::size_t   _write_addr;
+      std::size_t   _write_count;
+  };
   
-  
-  } // namespace cmd
   
 } // namespace modbus
