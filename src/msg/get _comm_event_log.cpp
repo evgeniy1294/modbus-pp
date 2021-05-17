@@ -25,3 +25,22 @@ std::size_t GetCommEventLogCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 }
 
 
+
+
+Error GetCommEventLogCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    err = ERROR_NONE;
+  }
+
+  return err;
+}
+
+
+
+
+
+

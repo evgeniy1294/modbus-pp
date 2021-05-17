@@ -16,6 +16,7 @@ GetCommEventCounterCmd::GetCommEventCounterCmd(std::uint8_t unit_id)
 
 
 
+
 std::size_t GetCommEventCounterCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 {
   std::size_t ret = 0;
@@ -33,6 +34,21 @@ std::size_t GetCommEventCounterCmd::Serialize( std::uint8_t *pdu, std::size_t sz
 
 
 
+Error GetCommEventCounterCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    err = ERROR_NONE;
+  }
+
+  return err;
+}
+
+
+
+
 
 
 
@@ -46,10 +62,26 @@ GetCommEventCounterRslt::GetCommEventCounterRslt( std::uint8_t unit_id, std::uin
 
 
 
+
+
+
+
+GetCommEventCounterRslt::GetCommEventCounterRslt( std::uint8_t unit_id )
+{
+  _unit_id = unit_id;
+}
+
+
+
+
+
+
+
 std::uint8_t GetCommEventCounterRslt::GetCode()
 {
   return GetCommEventCounterCmd::kCode;
 }
+
 
 
 
@@ -71,4 +103,29 @@ std::size_t GetCommEventCounterRslt::Serialize( std::uint8_t *pdu, std::size_t s
 }
 
 
+
+
+
+
+Error GetCommEventCounterRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == 5u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == GetCommEventCounterCmd::kCode )
+    {
+      _status = _status | ( *pdu++ << 8 );
+      _status = _status | *pdu++;
+      _count  = _count  | ( *pdu++ << 8 );
+      _count  = _count  | *pdu;
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
