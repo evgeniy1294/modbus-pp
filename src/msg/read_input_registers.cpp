@@ -36,7 +36,29 @@ std::size_t RdInputRegsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+RdInputRegsCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
 
+  if ( sz == kRequestPduSize )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = _addr | ( *pdu++ );
+
+      _count = *pdu++ << 8;
+      _count = *pdu;
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
 
 
@@ -45,12 +67,11 @@ std::size_t RdInputRegsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 RdInputRegsRslt::
 RdInputRegsRslt( std::uint8_t unit_id,
                  std::uint8_t* ptr, std::uint8_t* end,
-                 std::size_t addr, std::size_t count )
+                 std::size_t count )
 {
   _unit_id = unit_id;
   _ptr = ptr;
   _end = end;
-  _addr = addr;
   _count = count;
 }
 
@@ -98,6 +119,31 @@ std::size_t RdInputRegsRslt::Serialize( std::uint8_t* pdu, std::size_t sz )
 
 
 
+Error
+RdInputRegsRslt::Deserialize( std::uint8_t* pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
 
+  if ( sz != 0 )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == RdInputRegsCmd::kCode )
+    {
+      std::uint8_t byte_count = *pdu++;
+
+      if ( byte_count == ( sz - 2 ) )
+      {
+        _count = byte_count >> 1;
+        _ptr = pdu;
+        _end = pdu + byte_count;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+  return err;
+}
 
 

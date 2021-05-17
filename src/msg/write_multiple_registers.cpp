@@ -55,6 +55,39 @@ WrMulRegsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+WrMulRegsCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz > 6u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = _addr | ( *pdu++ );
+
+      _count = *pdu++ << 8;
+      _count = _count | ( *pdu++ );
+
+      std::uint8_t byte_count = *pdu++;
+
+      if ( byte_count == ( sz - 6u ) )
+      {
+        _ptr = pdu;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+
+  return err;
+}
+
+
 
 
 
@@ -98,5 +131,28 @@ std::size_t WrMulRegsRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+
+Error
+WrMulRegsRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == 5u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == WrMulRegsCmd::kCode )
+    {
+      _addr  = *pdu++ << 8;
+      _addr  = _addr | ( *pdu++ );
+      _count = *pdu++ << 8;
+      _count = _count | ( *pdu++ );
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
 

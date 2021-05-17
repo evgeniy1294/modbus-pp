@@ -69,13 +69,13 @@ namespace modbus {
   {
     public:
       RdCoilsRslt( std::uint8_t unit_id );
-      RdCoilsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+      RdCoilsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       Error Deserialize( std::uint8_t* pdu, std::size_t sz );
 
       std::uint8_t GetCode() override;
-      std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+      std::size_t GetCount() { return _count; }
       std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
 
     //private:
@@ -84,7 +84,6 @@ namespace modbus {
     private:
       std::uint8_t* _ptr;
       std::uint8_t* _end;
-      std::size_t   _addr;
       std::size_t   _count;
   };
 
@@ -96,13 +95,13 @@ namespace modbus {
   {
     public:
       RdDiscreteInputsRslt( std::uint8_t unit_id );
-      RdDiscreteInputsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+      RdDiscreteInputsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       Error Deserialize( std::uint8_t* pdu, std::size_t sz );
 
       std::uint8_t GetCode() override;
-      std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+      std::size_t GetCount() { return _count; }
       std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
 
     //private:
@@ -111,7 +110,6 @@ namespace modbus {
     private:
       std::uint8_t* _ptr;
       std::uint8_t* _end;
-      std::size_t   _addr;
       std::size_t   _count;
   };
 
@@ -123,13 +121,13 @@ namespace modbus {
   {
     public:
       RdHoldingRegsRslt( std::uint8_t unit_id );
-      RdHoldingRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+      RdHoldingRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       Error Deserialize( std::uint8_t* pdu, std::size_t sz );
 
       std::uint8_t GetCode() override;
-      std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+      std::size_t GetCount() { return _count; }
       std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
     //private:
       ~RdHoldingRegsRslt() = default;
@@ -137,7 +135,6 @@ namespace modbus {
     private:
       std::uint8_t* _ptr;
       std::uint8_t* _end;
-      std::size_t   _addr;
       std::size_t   _count;
   };
 
@@ -149,13 +146,13 @@ namespace modbus {
   {
     public:
       RdInputRegsRslt( std::uint8_t unit_id );
-      RdInputRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t addr, std::size_t count );
+      RdInputRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
       Error Deserialize( std::uint8_t* pdu, std::size_t sz );
 
       std::uint8_t GetCode() override;
-      std::pair< std::size_t , std::size_t > GetRange() { return {_addr, _count}; }
+      std::size_t GetCount() { return _count; }
       std::pair< std::uint8_t*, std::uint8_t* > GetValueStorage() { return {_ptr, _end}; }
     //private:
       ~RdInputRegsRslt() = default;
@@ -163,7 +160,6 @@ namespace modbus {
     private:
       std::uint8_t* _ptr;
       std::uint8_t* _end;
-      std::size_t   _addr;
       std::size_t   _count;
   };
 

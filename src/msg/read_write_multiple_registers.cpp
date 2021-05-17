@@ -60,6 +60,45 @@ std::size_t RdWrMulRegsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+RdWrMulRegsCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz != 0 )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _read_addr = *pdu++ << 8;
+      _read_addr = _read_addr | ( *pdu++ );
+
+      _read_count = *pdu++ << 8;
+      _read_count = _read_count | (*pdu++ );
+
+      _write_addr = *pdu++ << 8;
+      _write_addr = _write_addr | ( *pdu++ );
+
+      _write_count = *pdu++ << 8;
+      _write_count = _write_count | ( *pdu++ );
+
+      std::uint8_t byte_count = *pdu++;
+
+      if ( ( byte_count == ( sz - 10 ) ) && ( ( byte_count << 1 ) == _write_count ) )
+      {
+        _write_ptr = pdu;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+  return err;
+}
+
+
+
 
 
 
@@ -117,6 +156,35 @@ std::size_t RdWrMulRegsRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+
+
+
+Error
+RdWrMulRegsRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz != 0 )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == RdWrMulRegsCmd::kCode )
+    {
+      std::uint8_t byte_count = *pdu++;
+
+      if ( byte_count - ( sz - 2 ) )
+      {
+        _count = byte_count >> 1;
+        _ptr   = pdu;
+        _end   = pdu+byte_count;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+  return err;
+}
 
 
 

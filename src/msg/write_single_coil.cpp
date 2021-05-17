@@ -40,6 +40,29 @@ WrCoilCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+WrCoilCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = *pdu++;
+
+      _value = *pdu++ << 8;
+      _value = *pdu++;
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
 
 
@@ -83,6 +106,30 @@ std::size_t WrCoilRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+
+Error
+WrCoilRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == WrCoilCmd::kRequestPduSize )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == WrCoilCmd::kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = *pdu++;
+
+      _value = *pdu++ << 8;
+      _value = *pdu++;
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
 
 

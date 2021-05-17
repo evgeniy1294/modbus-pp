@@ -117,9 +117,10 @@ Error GetCommEventCounterRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
 
     if ( code == GetCommEventCounterCmd::kCode )
     {
-      _status = _status | ( *pdu++ << 8 );
+      _status = ( *pdu++ << 8 );
       _status = _status | *pdu++;
-      _count  = _count  | ( *pdu++ << 8 );
+
+      _count  = ( *pdu++ << 8 );
       _count  = _count  | *pdu;
 
       err = ERROR_NONE;

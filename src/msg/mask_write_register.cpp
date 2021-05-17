@@ -55,7 +55,21 @@ Error MaskWrRegsCmd::Deserialize(std::uint8_t *pdu, std::size_t sz)
 
   if ( sz == kRequestPduSize )
   {
+    std::uint8_t code = *pdu++;
 
+    if ( code == kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = _addr | ( *pdu++ );
+
+      _andmask = *pdu++ << 8;
+      _andmask = _andmask | ( *pdu++ );
+
+      _ormask = *pdu++ << 8;
+      _ormask = _ormask | ( *pdu++ );
+
+      err = ERROR_NONE;
+    }
   }
 
   return err;
@@ -103,5 +117,33 @@ std::size_t MaskWrRegsRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
   return ret;
 }
 
+
+
+
+Error MaskWrRegsRslt::Deserialize(std::uint8_t *pdu, std::size_t sz)
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == MaskWrRegsCmd::kRequestPduSize )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == MaskWrRegsCmd::kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = _addr | ( *pdu++ );
+
+      _andmask = *pdu++ << 8;
+      _andmask = _andmask | ( *pdu++ );
+
+      _ormask = *pdu++ << 8;
+      _ormask = _ormask | ( *pdu );
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 
 

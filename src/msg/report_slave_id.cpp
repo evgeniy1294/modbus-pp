@@ -25,3 +25,19 @@ std::size_t ReportSlaveIdCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
   return ret;
 }
 
+
+
+
+Error
+ReportSlaveIdCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    err = ERROR_NONE;
+  }
+
+  return err;
+}
+

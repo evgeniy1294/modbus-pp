@@ -63,6 +63,40 @@ WrMulCoilsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+WrMulCoilsCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz > 6u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _addr = *pdu++ << 8;
+      _addr = _addr | ( *pdu++ );
+
+      _count = *pdu++ << 8;
+      _count = _count | ( *pdu++ );
+
+      std::uint8_t byte_count = *pdu++;
+
+      if ( byte_count == ( sz - 6u ) )
+      {
+        _ptr = pdu;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+  return err;
+}
+
+
+
+
 
 
 WrMulCoilsRslt::WrMulCoilsRslt( std::uint8_t unit_id, std::size_t addr, std::size_t count )
@@ -102,4 +136,25 @@ std::size_t WrMulCoilsRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+
+Error
+WrMulCoilsRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == 5u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == WrMulCoilsCmd::kCode )
+    {
+      _addr  = *pdu++ << 8;
+      _addr  = _addr | ( *pdu++ );
+      _count = *pdu++ << 8;
+      _count = _count | ( *pdu++ );
+    }
+  }
+
+  return err;
+}
 

@@ -33,6 +33,29 @@ RdExcepStatusCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+RdExcepStatusCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    std::uint8_t code = *pdu;
+
+    if ( code == kCode )
+    {
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
+
+
+
+
+
+
 
 
 RdExcepStatusRslt::RdExcepStatusRslt( std::uint8_t unit_id, std::uint8_t status )
@@ -65,4 +88,24 @@ std::size_t RdExcepStatusRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 }
 
 
+
+
+Error
+RdExcepStatusRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == 2u )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == RdExcepStatusCmd::kCode )
+    {
+      _status = *pdu;
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
 

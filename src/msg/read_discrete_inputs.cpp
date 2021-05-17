@@ -42,6 +42,30 @@ RdDiscreteInputsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+RdDiscreteInputsCmd::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
+
+  if ( sz == kRequestPduSize )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == kCode )
+    {
+      _addr  = *pdu++ << 8;
+      _addr  = _addr | ( *pdu++ );
+
+      _count = *pdu++ << 8;
+      _count = _count | ( *pdu );
+
+      err = ERROR_NONE;
+    }
+  }
+
+  return err;
+}
+
 
 
 
@@ -51,12 +75,11 @@ RdDiscreteInputsCmd::Serialize( std::uint8_t *pdu, std::size_t sz )
 RdDiscreteInputsRslt::
 RdDiscreteInputsRslt( std::uint8_t unit_id,
                       std::uint8_t* ptr, std::uint8_t* end,
-                      std::size_t addr, std::size_t count )
+                      std::size_t count )
 {
   _unit_id = unit_id;
   _ptr = ptr;
   _end = end;
-  _addr = addr;
   _count = count;
 }
 
@@ -107,4 +130,29 @@ std::size_t RdDiscreteInputsRslt::Serialize( std::uint8_t *pdu, std::size_t sz )
 
 
 
+Error
+RdDiscreteInputsRslt::Deserialize( std::uint8_t *pdu, std::size_t sz )
+{
+  Error err = ERROR_FAILED;
 
+  if ( sz != 0 )
+  {
+    std::uint8_t code = *pdu++;
+
+    if ( code == RdDiscreteInputsCmd::kCode )
+    {
+      std::size_t byte_count = *pdu++;
+
+      if ( byte_count == ( sz - 2 ) )
+      {
+        _count = byte_count;
+        _ptr = pdu;
+        _end = pdu+_count;
+
+        err = ERROR_NONE;
+      }
+    }
+  }
+
+  return err;
+}
