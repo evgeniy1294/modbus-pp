@@ -365,7 +365,7 @@ namespace modbus
   class RdWrMulRegsCmd: public Command
   {
     public:
-      constexpr static std::uint8_t kCode = 0x10u;
+      constexpr static std::uint8_t kCode = 0x17u;
 
     public:
       RdWrMulRegsCmd( std::uint8_t unit_id );

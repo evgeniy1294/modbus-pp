@@ -171,7 +171,7 @@ static std::uint8_t CalculateLrc8( const std::uint8_t* data, const std::uint8_t*
 
 
 
-auto AsciiStrategy::Check( Buffer& buffer ) -> Error
+Error AsciiStrategy::Check( Buffer& buffer )
 {
   Error ret = ERROR_FAILED;
   
@@ -207,34 +207,32 @@ auto AsciiStrategy::Check( Buffer& buffer ) -> Error
  
 
  
-// TODO: Change to "ExtractCommand"
-auto AsciiStrategy::ExtractPdu( Buffer& buffer ) -> std::pair< std::uint8_t*, std::size_t >
+Message* AsciiStrategy::ExtractMsg( Buffer& buffer, MsgBuilder* builder )
 {
-  std::uint8_t* pdu = nullptr;
-  std::size_t   adu_size = buffer.adu_end - buffer.begin;
-  std::size_t   pdu_size = 0;
-  
+  Message* msg = nullptr;
+
   if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
+    std::size_t   adu_size = buffer.adu_end - buffer.begin;
+
     if ( adu_size >= kAsciiWrapSize )
     {
       std::uint8_t* pdu_end = buffer.adu_end - 2u /*lrc8*/ - 2u /* 0x0D + 0x0A */;
-      pdu = buffer.begin + kPduStartOffset;
+      std::uint8_t* pdu = buffer.begin + kPduStartOffset;
       
       if ( AsciiToByteArray( pdu, pdu_end ) == ERROR_NONE )
       {
-        pdu_size  = ( pdu_end - pdu ) >> 1;
-        pdu_size  = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
-      }
-      else
-      {
-        pdu = nullptr;
+        std::size_t pdu_size = ( pdu_end - pdu ) >> 1;
+        std::uint8_t unit_id = ( (buffer.begin[kServerAddrPosHi] & 0x0f) << 4 ) |
+                                 (buffer.begin[kServerAddrPosLo] & 0x0f);
+
+        msg = builder->Build( unit_id, pdu, pdu_size );
       }
     }
   }
   
   
-  return { pdu, pdu_size };
+  return msg;
 }
 
 
@@ -247,7 +245,7 @@ auto AsciiStrategy::ExtractPdu( Buffer& buffer ) -> std::pair< std::uint8_t*, st
 
 
 
-auto AsciiStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std::uint16_t >
+std::pair< std::uint8_t, std::uint16_t > AsciiStrategy::GetAduInfo( Buffer& buffer )
 {
   std::uint8_t ret = kDummyUnitId;
   std::size_t   adu_size = buffer.adu_end - buffer.begin;
@@ -273,7 +271,7 @@ auto AsciiStrategy::GetAduInfo( Buffer& buffer ) -> std::pair< std::uint8_t, std
 
 
 
-auto AsciiStrategy::CreateAdu( Buffer& buffer, Message* msg ) -> Error
+Error AsciiStrategy::CreateAdu( Buffer& buffer, Message* msg )
 {
   Error err = ERROR_FAILED;
       

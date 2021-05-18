@@ -4,8 +4,8 @@
 #include <utility>
 
 #include "defs.hpp"
-#include "commands.hpp"
-#include "result.hpp"
+#include "message.hpp"
+#include "builder.hpp"
 
 
 namespace modbus
@@ -15,10 +15,8 @@ namespace modbus
     public:
       virtual Error Check ( Buffer& ) = 0;
       virtual Error CreateAdu( Buffer&, Message* ) = 0;
+      virtual Message* ExtractMsg( Buffer&, MessageBuilder* ) = 0;
       virtual std::pair< std::uint8_t , std::uint16_t > GetAduInfo( Buffer& ) = 0;
-      
-      // Maybe should be changed on ExtractMessage
-      virtual std::pair< std::uint8_t*, std::size_t >   ExtractPdu( Buffer& ) = 0;
 
     protected:
       enum Type { TYPE_ASCII, TYPE_RTU, TYPE_TCP };
@@ -43,8 +41,8 @@ namespace modbus
     public:
       Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
+      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
-      std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 
     private:
       Type IsType() override { return Type::TYPE_ASCII; }
@@ -66,10 +64,10 @@ namespace modbus
     
     
     public:
-      Error Check ( Buffer& );
+      Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
+      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
-      std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 
     private:
       Type IsType() override { return Type::TYPE_RTU; }
@@ -93,10 +91,10 @@ namespace modbus
     
     
     public:
-      Error Check ( Buffer& );
+      Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
+      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
-      std::pair< std::uint8_t*, std::size_t >  ExtractPdu( Buffer& ) override;
 
 
     private:

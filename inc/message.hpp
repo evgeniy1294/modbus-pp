@@ -21,5 +21,11 @@ namespace modbus
       std::uint8_t _unit_id;
   }; 
     
+
+  class MsgBuilder
+  {
+    public:
+      virtual Message* Build( std::uint8_t unit_id, std::uint8_t* pdu, std::size_t sz );
+  };
     
 } // namespace message

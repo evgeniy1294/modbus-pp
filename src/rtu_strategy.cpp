@@ -25,24 +25,25 @@ auto RtuStrategy::Check( Buffer& buffer ) -> Error
 
 
 
-auto RtuStrategy::ExtractPdu( Buffer& buffer ) -> std::pair< std::uint8_t*, std::size_t >
+Message* RtuStrategy::ExtractMsg( Buffer& buffer, MsgBuilder* builder )
 {
-  std::uint8_t* pdu = nullptr;
-  std::size_t   pdu_size = 0;
-  
+  Message* msg = nullptr;
+
   if ( ( buffer.begin != nullptr ) && ( buffer.adu_end > buffer.begin ) )
   {
     std::size_t adu_size = buffer.adu_end - buffer.begin;
 
     if ( adu_size > kRtuWrapSize )
     {
-      pdu = buffer.begin + kPduStartOffset;
-      pdu_size  = adu_size - kRtuWrapSize;
-      pdu_size  = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
+      std::uint8_t* pdu = buffer.begin + kPduStartOffset;
+      std::size_t pdu_size = adu_size - kRtuWrapSize;
+      std::uint8_t unit_id = buffer.begin[kServerAddrPos];
+
+      msg = builder->Build( unit_id, pdu, pdu_size );
     }
   }
   
-  return { pdu, pdu_size };
+  return msg;
 }
 
 

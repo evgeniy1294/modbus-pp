@@ -17,7 +17,9 @@ namespace modbus
 
     public:
       virtual Result* Execute(Command* cmd) = 0;
-      virtual void Accept (Result* result) = 0;
+      virtual void Accept (Result* result)  = 0;
+      virtual MsgBuilder* GetCmdBuilder()   = 0;
+      virtual MsgBuilder* GetRsltBuilder()  = 0;
 
     private:
       std::uint8_t _id;

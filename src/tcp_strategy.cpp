@@ -19,10 +19,9 @@ auto TcpStrategy::Check( Buffer& context ) -> Error
   
 
 
-auto TcpStrategy::ExtractPdu( Buffer& context ) -> std::pair< std::uint8_t*, std::size_t >
+Message* TcpStrategy::ExtractMsg( Buffer& context, MsgBuilder* builder )
 {
-  std::uint8_t* pdu      = nullptr;
-  std::size_t   pdu_size = 0;
+  Message* msg = nullptr;
   
   if ( ( context.begin != nullptr ) && ( context.adu_end > context.begin ) )
   {
@@ -30,13 +29,15 @@ auto TcpStrategy::ExtractPdu( Buffer& context ) -> std::pair< std::uint8_t*, std
 
     if ( adu_size > kMbapHeaderSize )
     {
-      pdu      = context.begin + kPduStartOffset;
-      pdu_size = adu_size - kMbapHeaderSize;
-      pdu_size = ( pdu_size > kMaxPduSize ) ? kMaxPduSize : pdu_size;
+      std::size_t pdu_size = adu_size - kMbapHeaderSize;
+      std::uint8_t* pdu = context.begin + kPduStartOffset;
+      std::uint8_t unit_id = context.begin[kServerAddrPos];
+
+      msg = builder->Build( unit_id, pdu, pdu_size );
     }
   }
   
-  return { pdu, pdu_size };
+  return msg;
 }
 
 
