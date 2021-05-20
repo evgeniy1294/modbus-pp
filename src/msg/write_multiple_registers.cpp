@@ -4,6 +4,12 @@
 using namespace modbus;
 
 
+WrMulRegsCmd::WrMulRegsCmd( std::uint8_t unit_id )
+{
+  _unit_id = unit_id;
+}
+
+
 
 WrMulRegsCmd::
 WrMulRegsCmd(std::uint8_t unit_id, std::uint8_t* ptr,

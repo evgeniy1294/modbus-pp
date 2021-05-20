@@ -10,24 +10,8 @@ namespace modbus {
   using Result = Message;
 
 
-  class NullResult: public Result
-  {
-    public:
-      static constexpr std::uint8_t kCode = 0x00;
 
-    public:
-      NullResult() = default;
-      std::uint8_t GetCode() override { return kCode; }
-      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override { return 0; }
-  };
-
-
-
-
-
-
-
-  class ErrorResult: public Result
+  class ErrorRslt: public Result
   {
     public:
       enum class ExceptionId: std::uint8_t {
@@ -45,17 +29,17 @@ namespace modbus {
 
 
     public:
-      ErrorResult( std::uint8_t unit_id, std::uint8_t function_code, ExceptionId ei );
-      ErrorResult( std::uint8_t unit_id );
+      ErrorRslt( std::uint8_t unit_id, std::uint8_t function_code, ExceptionId ei );
+      ErrorRslt( std::uint8_t unit_id );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode() override { return _code; }
       ExceptionId GetExceptionId() { return _ei; }
 
     //private:
-      ~ErrorResult() = default;
+      ~ErrorRslt() = default;
 
     private:
       std::uint8_t _code;
@@ -72,7 +56,7 @@ namespace modbus {
       RdCoilsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode() override;
       std::size_t GetCount() { return _count; }
@@ -98,7 +82,7 @@ namespace modbus {
       RdDiscreteInputsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode() override;
       std::size_t GetCount() { return _count; }
@@ -124,7 +108,7 @@ namespace modbus {
       RdHoldingRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode() override;
       std::size_t GetCount() { return _count; }
@@ -149,7 +133,7 @@ namespace modbus {
       RdInputRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode() override;
       std::size_t GetCount() { return _count; }
@@ -173,7 +157,7 @@ namespace modbus {
       WrCoilRslt( std::uint8_t unit_id, std::uint8_t value, std::size_t addr );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::pair< std::uint16_t, std::size_t> GetValue() { return {_value, _addr}; }
@@ -195,11 +179,12 @@ namespace modbus {
       WrRegsRslt( std::uint8_t unit_id );
       WrRegsRslt(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
 
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::pair< std::uint16_t, std::size_t> GetValue() { return {_value, _addr}; }
+
    // private:
       ~WrRegsRslt() = default;
 
@@ -220,7 +205,7 @@ namespace modbus {
       RdExcepStatusRslt( std::uint8_t unit_id, std::uint8_t status );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::uint8_t GetStatus() { return _status; }
@@ -243,7 +228,7 @@ namespace modbus {
       GetCommEventCounterRslt( std::uint8_t unit_id, std::uint16_t status, std::uint16_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _status, _count}; }
@@ -263,7 +248,7 @@ namespace modbus {
       WrMulCoilsRslt( std::uint8_t unit_id, std::size_t addr, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _addr, _count}; }
@@ -286,7 +271,7 @@ namespace modbus {
       WrMulRegsRslt( std::uint8_t unit_id, std::size_t addr, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
       std::pair< std::uint16_t, std::uint16_t > GetResult() { return { _addr, _count}; }
@@ -311,7 +296,7 @@ namespace modbus {
       MaskWrRegsRslt( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
     // private:
@@ -333,7 +318,7 @@ namespace modbus {
       RdWrMulRegsRslt( std::uint8_t unit_id, std::uint8_t* ptr, std::uint8_t* end, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override;
     // private:

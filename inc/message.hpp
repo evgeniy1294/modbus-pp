@@ -13,6 +13,7 @@ namespace modbus
     public:
       virtual std::uint8_t GetCode () = 0;
       virtual std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) = 0;
+      virtual Error Deserialize ( std::uint8_t* pdu, std::size_t maxsz ) = 0;
       
    // protected:
       virtual ~Message() = default;
@@ -25,7 +26,24 @@ namespace modbus
   class MsgBuilder
   {
     public:
-      virtual Message* Build( std::uint8_t unit_id, std::uint8_t* pdu, std::size_t sz );
+      virtual Message* Build( std::uint8_t unit_id, std::uint8_t* pdu, std::size_t sz ) = 0;
   };
+
+
+
+  class CmdBuilder: public MsgBuilder
+  {
+    public:
+      Message* Build( std::uint8_t unit_id, std::uint8_t* pdu, std::size_t sz ) override;
+  };
+
+
+
+  class RsltBuilder: public MsgBuilder
+  {
+    public:
+      Message* Build( std::uint8_t unit_id, std::uint8_t* pdu, std::size_t sz ) override;
+  };
+
     
 } // namespace message

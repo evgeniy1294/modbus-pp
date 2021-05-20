@@ -8,6 +8,24 @@ namespace modbus
 
   using Command = Message;
   
+
+  class UnknownCmd: public Command
+  {
+    public:
+      UnknownCmd( std::uint8_t unit_id, std::uint8_t code );
+      std::size_t Serialize( std::uint8_t* pdu, std::size_t maxsz ) override { return 0; }
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override { return ERROR_NOT_IMPLEMENTED; }
+
+      std::uint8_t GetCode () override { return code; }
+
+    private:
+      std::size_t code;
+  };
+
+
+
+
+
   class RdCoilsCmd: public Command
   {
     public:
@@ -19,7 +37,7 @@ namespace modbus
       RdCoilsCmd( std::uint8_t unit_id, std::size_t addr, std::size_t count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -45,7 +63,7 @@ namespace modbus
       RdDiscreteInputsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -73,7 +91,7 @@ namespace modbus
       RdHoldingRegsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -101,7 +119,7 @@ namespace modbus
       RdInputRegsCmd(std::uint8_t unit_id, std::size_t addr, std::size_t count);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -130,7 +148,7 @@ namespace modbus
       WrCoilCmd(std::uint8_t unit_id, std::uint8_t value, std::size_t addr);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -158,7 +176,7 @@ namespace modbus
       WrRegsCmd(std::uint8_t unit_id, std::uint16_t value, std::size_t addr);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -187,7 +205,7 @@ namespace modbus
       RdExcepStatusCmd( std::uint8_t unit_id );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -212,7 +230,7 @@ namespace modbus
       GetCommEventCounterCmd( std::uint8_t unit_id );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -237,7 +255,7 @@ namespace modbus
       GetCommEventLogCmd( std::uint8_t unit_id );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
     //private:
@@ -250,28 +268,28 @@ namespace modbus
   
   
   
-    class WrMulCoilsCmd: public Command
-    {
-      public:
-        constexpr static std::uint8_t kCode = 0x0Fu;
+  class WrMulCoilsCmd: public Command
+  {
+    public:
+      constexpr static std::uint8_t kCode = 0x0Fu;
 
-      public:
-        WrMulCoilsCmd( std::uint8_t unit_id );
-        WrMulCoilsCmd(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+    public:
+      WrMulCoilsCmd( std::uint8_t unit_id );
+      WrMulCoilsCmd(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
 
-        std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-        Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
-        std::uint8_t GetCode () override { return kCode; }
+      std::uint8_t GetCode () override { return kCode; }
 
-      //private:
-        ~WrMulCoilsCmd() = default;
+    //private:
+      ~WrMulCoilsCmd() = default;
 
-      private:
-        std::uint8_t*  _ptr;           ///< Pointer to data
-        std::size_t   _addr;           ///< Modbus data logic address
-        std::size_t  _count;           ///< Data length
-    };
+    private:
+      std::uint8_t*  _ptr;           ///< Pointer to data
+      std::size_t   _addr;           ///< Modbus data logic address
+      std::size_t  _count;           ///< Data length
+  };
   
   
   
@@ -286,12 +304,13 @@ namespace modbus
 
     public:
       WrMulRegsCmd( std::uint8_t unit_id );
-      WrMulRegsCmd(std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
+      WrMulRegsCmd( std::uint8_t unit_id, std::uint8_t* ptr, std::size_t addr, std::size_t count);
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
+
     //private:
       ~WrMulRegsCmd() = default;
 
@@ -316,7 +335,7 @@ namespace modbus
       ReportSlaveIdCmd( std::uint8_t unit_id );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -329,9 +348,9 @@ namespace modbus
   
   
   
-  
-  
-  
+
+
+
   class MaskWrRegsCmd: public Command
   {
     public:
@@ -343,7 +362,7 @@ namespace modbus
       MaskWrRegsCmd( std::uint8_t unit_id, std::size_t addr, std::uint16_t andmask, std::uint16_t ormask );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 
@@ -355,8 +374,8 @@ namespace modbus
       std::uint16_t _ormask;
       std::uint16_t _andmask;
   };
-  
-  
+
+
   
   
   
@@ -374,7 +393,7 @@ namespace modbus
                                   std::uint8_t* write_ptr, std::size_t write_addr, std::size_t write_count );
 
       std::size_t Serialize ( std::uint8_t* pdu, std::size_t maxsz ) override;
-      Error Deserialize( std::uint8_t* pdu, std::size_t sz );
+      Error Deserialize( std::uint8_t* pdu, std::size_t sz ) override;
 
       std::uint8_t GetCode () override { return kCode; }
 

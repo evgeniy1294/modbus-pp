@@ -15,7 +15,7 @@ namespace modbus
     public:
       virtual Error Check ( Buffer& ) = 0;
       virtual Error CreateAdu( Buffer&, Message* ) = 0;
-      virtual Message* ExtractMsg( Buffer&, MessageBuilder* ) = 0;
+      virtual Message* ExtractMsg( Buffer&, MsgBuilder* ) = 0;
       virtual std::pair< std::uint8_t , std::uint16_t > GetAduInfo( Buffer& ) = 0;
 
     protected:
@@ -41,7 +41,7 @@ namespace modbus
     public:
       Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
-      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
+      Message* ExtractMsg( Buffer&, MsgBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
 
     private:
@@ -66,7 +66,7 @@ namespace modbus
     public:
       Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
-      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
+      Message* ExtractMsg( Buffer&, MsgBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
 
     private:
@@ -93,7 +93,7 @@ namespace modbus
     public:
       Error Check ( Buffer& ) override;
       Error CreateAdu( Buffer&, Message* ) override;
-      Message* ExtractMsg( Buffer&, MessageBuilder* ) override;
+      Message* ExtractMsg( Buffer&, MsgBuilder* ) override;
       std::pair< std::uint8_t, std::uint16_t > GetAduInfo( Buffer& ) override;
 
 
